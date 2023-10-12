@@ -14,7 +14,11 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@vcnft/alchemy": ["packages/alchemy/src/index.ts"],
+      "@vcnft/core": ["packages/core/src/index.ts"],
+      "@vcnft/infura": ["packages/infura/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }
