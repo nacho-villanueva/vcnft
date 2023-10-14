@@ -39,5 +39,10 @@
       "!{projectRoot}/test-setup.[jt]s"
     ],
     "sharedGlobals": []
+  },
+  "pluginsConfig": {
+    "@nrwl/js": {
+      "analyzeSourceFiles": true
+    }
   }
 }

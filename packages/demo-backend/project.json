@@ -1,0 +1,64 @@
+{
+  "name": "demo-backend",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/demo-backend/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/packages/demo-backend",
+        "main": "packages/demo-backend/src/main.ts",
+        "tsConfig": "packages/demo-backend/tsconfig.app.json",
+        "assets": ["packages/demo-backend/src/assets"],
+        "isolatedConfig": true,
+        "webpackConfig": "packages/demo-backend/webpack.config.js"
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "demo-backend:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "demo-backend:build:development"
+        },
+        "production": {
+          "buildTarget": "demo-backend:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/demo-backend/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/demo-backend/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    }
+  },
+  "tags": []
+}

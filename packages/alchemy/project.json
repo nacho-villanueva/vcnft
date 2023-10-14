@@ -11,7 +11,9 @@
         "outputPath": "dist/packages/alchemy",
         "main": "packages/alchemy/src/index.ts",
         "tsConfig": "packages/alchemy/tsconfig.lib.json",
-        "assets": ["packages/alchemy/*.md"]
+        "assets": ["packages/alchemy/*.md"],
+        "updateBuildableProjectDepsInPackageJson": true,
+        "buildableProjectDepsInPackageJsonType": "dependencies"
       }
     },
     "publish": {
