@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx_proxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - network
+
+networks:
+  network:
+    driver: bridge
