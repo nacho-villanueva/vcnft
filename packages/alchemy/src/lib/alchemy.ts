@@ -4,6 +4,7 @@ import {BlockchainProvider} from "@vcnft/core";
 import * as assert from "assert";
 import {AssetId} from "caip";
 import {chainIdToAlchemyNetwork} from "./utils";
+import vcnftAbi from "./contracts/VCNFT_721.json"
 
 export class AlchemyBlockchainProvider implements BlockchainProvider {
   private readonly apiKey: string
@@ -37,6 +38,5 @@ export class AlchemyBlockchainProvider implements BlockchainProvider {
     const network = chainIdToAlchemyNetwork(asset.chainId);
     return (await this.getAlchemyInstance(network).nft.getOwnersForNft(asset.assetName.reference, asset.tokenId)).owners;
   }
-
-
+  
 }

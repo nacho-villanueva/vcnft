@@ -13,11 +13,16 @@
     "lib": ["es2020", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
       "@vcnft/alchemy": ["packages/alchemy/src/index.ts"],
       "@vcnft/core": ["packages/core/src/index.ts"],
-      "@vcnft/backend-demo": ["packages/backend-demo/src/index.ts"],
+      "@vcnft/demo-backend": ["packages/demo-backend/src/index.ts"],
+      "@vcnft/demo-frontend/*": ["packages/demo-frontend/*"],
+      "@vcnft/tbd": ["packages/tbd/src/index.ts"],
+      "@vcnft/transmute": ["packages/transmute/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

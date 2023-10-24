@@ -1,0 +1,7 @@
+version: "2"
+authtoken: 2WAUidO7UQk7WXr3L19IOSsKFbg_2AfcoEd2VyZA88WwJGSP1
+tunnels:
+  ngnix:
+    proto: http
+    addr: demo-frontend:4200
+    hostname: vcnft.ngrok.io

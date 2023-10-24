@@ -10,6 +10,7 @@ import {AccountId, AssetId, ChainId} from "caip";
  * https://github.com/ChainAgnostic/CAIPs/blob/main/CAIPs/caip-2.md
  * Example:
  * did:nft:eip155_1:erc721_0x021c4361c944017bc2037baf86538f952f2f0472:214
+ *
  */
 
 export function parseNftDid(did: string) : AssetId {

@@ -44,5 +44,18 @@
     "@nrwl/js": {
       "analyzeSourceFiles": true
     }
+  },
+  "generators": {
+    "@nx/react": {
+      "application": {
+        "babel": true
+      }
+    },
+    "@nx/next": {
+      "application": {
+        "style": "scss",
+        "linter": "eslint"
+      }
+    }
   }
 }

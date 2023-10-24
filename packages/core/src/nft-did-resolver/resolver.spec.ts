@@ -1,6 +1,7 @@
 import {BlockchainProvider} from '@vcnft/core';
 import { getResolver, parseNftDid, isNftDid } from './resolver';
-import {Resolver} from "did-resolver"; // Import all functions from actual file
+import {Resolver} from "did-resolver";
+import {AssetType, ChainId} from "caip"; // Import all functions from actual file
 
 describe('NFT DID Resolver', () => {
 
@@ -9,8 +10,10 @@ describe('NFT DID Resolver', () => {
   beforeAll(() => {
     // Mock the BlockchainProvider
     mockBlockchainProvider = {
+      getMintedAssets: jest.fn(),
+      setSigner: jest.fn(),
       getNFTOwners: jest.fn(),
-      // Add other methods as necessary
+      mintNFT: jest.fn()
     };
 
     // Mock the getNFTOwners method

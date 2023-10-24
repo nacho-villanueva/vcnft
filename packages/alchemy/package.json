@@ -2,6 +2,7 @@
   "name": "@vcnft/alchemy",
   "version": "0.0.1",
   "dependencies": {
+    "dotenv-flow": "^4.0.0",
     "tslib": "^2.3.0"
   },
   "type": "commonjs",
