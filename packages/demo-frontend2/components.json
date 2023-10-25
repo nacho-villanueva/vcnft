@@ -1,0 +1,15 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "new-york",
+  "rsc": false,
+  "tailwind": {
+    "config": "packages/demo-frontend2/tailwind.config.js",
+    "css": "packages/demo-frontend2/src/styles.css",
+    "baseColor": "stone",
+    "cssVariables": true
+  },
+  "aliases": {
+    "components": "@vcnft/demo-frontend2/src/components",
+    "utils": "@vcnft/demo-frontend2/src/utils"
+  }
+}

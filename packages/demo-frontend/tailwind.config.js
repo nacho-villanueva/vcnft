@@ -2,6 +2,7 @@ import {nextui} from "@nextui-org/react";
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  mode: 'jit',
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -11,8 +12,7 @@ module.exports = {
   theme: {
     extend: {},
   },
-  darkMode: false,
-  mode: 'jit',
+  darkMode: "media",
   plugins: [nextui()],
 }
 

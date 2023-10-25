@@ -24,6 +24,9 @@
     },
     "test": {
       "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"]
+    },
+    "e2e": {
+      "inputs": ["default", "^production"]
     }
   },
   "namedInputs": {
@@ -48,7 +51,17 @@
   "generators": {
     "@nx/react": {
       "application": {
+        "style": "css",
+        "linter": "eslint",
+        "bundler": "vite",
         "babel": true
+      },
+      "component": {
+        "style": "css"
+      },
+      "library": {
+        "style": "css",
+        "linter": "eslint"
       }
     },
     "@nx/next": {

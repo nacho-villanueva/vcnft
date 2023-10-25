@@ -141,5 +141,12 @@ export class IssuerController {
         return await this.issuerService.getIssuedCredential(id);
     }
 
+    @ApiProperty({description: "Fetch Issued Credentials"})
+    @HttpCode(200)
+    @Get("/:name/issue/vcnft")
+    async getIssuedCredentials(@Param("name") name: string) {
+        return await this.issueSessionService.findAllByIssuer(name);
+    }
+
 
 }

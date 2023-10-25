@@ -59,11 +59,11 @@ type CardItemProps = {
 }
 
 const CardItem = ({title, sub, image, href}: CardItemProps) => {
-  return <Card className={styles.card} as={"a"} href={href}>
-    <CardHeader className={styles.cardHeader}>
+  return <a className={styles.card} href={href}>
+    <div className={styles.cardHeader}>
       <h4 className="text-white font-medium text-large">{title}</h4>
       <p className="text-tiny text-white/60">{sub}</p>
-    </CardHeader>
+    </div>
     <div className={styles.cardBackdrop}/>
     <Image
       removeWrapper
@@ -71,5 +71,5 @@ const CardItem = ({title, sub, image, href}: CardItemProps) => {
       className={styles.cardCover}
       src={image}
     />
-  </Card>
+  </a>
 }

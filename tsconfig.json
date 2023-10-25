@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@demo-frontend2/components": ["packages/demo-frontend2/src/components/index.ts"],
+      "@demo-frontend2/components/*": ["packages/demo-frontend2/src/components/*"]
+    }
+  }
+}

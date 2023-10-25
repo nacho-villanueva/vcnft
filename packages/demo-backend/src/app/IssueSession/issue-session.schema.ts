@@ -8,10 +8,16 @@ export type IssueSessionDocument = HydratedDocument<IssueSession>;
 export class IssueSession {
 
   @Prop()
+  issuedAt: Date;
+
+  @Prop()
   issuerName: string;
 
   @Prop()
   issuerDID: string;
+
+  @Prop()
+  forAddress: string;
 
   @Prop()
   nftDidCreation: string;

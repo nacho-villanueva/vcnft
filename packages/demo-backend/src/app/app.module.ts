@@ -7,6 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import {IssuerModule} from "./issuer/issuer.module";
 import {VcnftModule} from "./vcnft/vcnft.module";
 import {ConfigModule} from "@nestjs/config";
+import {CredentialsModule} from "./credentials/credentials.module";
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import {ConfigModule} from "@nestjs/config";
     HolderModule,
     IssuerModule,
     VcnftModule,
+    CredentialsModule,
     MongooseModule.forRoot(`mongodb://mongoadmin:bdung@${process.env.MONGO_HOST}`)],
   controllers: [AppController],
   providers: [AppService],

@@ -17,10 +17,12 @@
     "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
+      "@/*": ["packages/demo-frontend2/src/*"],
       "@vcnft/alchemy": ["packages/alchemy/src/index.ts"],
       "@vcnft/core": ["packages/core/src/index.ts"],
       "@vcnft/demo-backend": ["packages/demo-backend/src/index.ts"],
       "@vcnft/demo-frontend/*": ["packages/demo-frontend/*"],
+      "@vcnft/demo-frontend2/*": ["packages/demo-frontend2/*"],
       "@vcnft/tbd": ["packages/tbd/src/index.ts"],
       "@vcnft/transmute": ["packages/transmute/src/index.ts"]
     }

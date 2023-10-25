@@ -44,9 +44,9 @@ export class VcnftService {
         return new TBDSSIProvider(process.env["TBD_URL"] || "http://localhost:8080");
     }
 
-    getIssuer(issuer: IssuerModel) {
+    getIssuer(signer: string) {
         const bp = this.getBlockchainProvider()
-        bp.setSigner(issuer.signer)
+        bp.setSigner(signer)
 
         const ssi = this.getSSIProvider()
 

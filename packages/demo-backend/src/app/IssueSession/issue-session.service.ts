@@ -23,4 +23,8 @@ export class IssueSessionService {
   async findAll(): Promise<IssueSession[]> {
     return this.issueSessionModel.find().exec();
   }
+
+  async findAllByIssuer(issuerName: string): Promise<IssueSession[]> {
+    return this.issueSessionModel.find({issuerName: issuerName}).exec();
+  }
 }

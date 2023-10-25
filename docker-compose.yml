@@ -1,11 +1,19 @@
 version: '3'
 
 services:
-  demo-frontend:
+#  demo-frontend:
+#    extends:
+#      file: docker-compose.base.yml
+#      service: nx-app-base
+#    command: npm run demo-frontend:dev:docker
+#    ports:
+#      - "4200:4200"
+
+  demo-frontend2:
     extends:
       file: docker-compose.base.yml
       service: nx-app-base
-    command: npm run demo-frontend:dev:docker
+    command: npm run demo-frontend2:dev:docker
     ports:
       - "4200:4200"
 
@@ -63,31 +71,31 @@ services:
 #    volumes:
 #      - vcnft-redis:/data
 
-#  nginx:
-#    image: nginx:latest
-#    container_name: nginx_proxy
-#    ports:
-#      - "3002:3002"
-#    volumes:
-#      - ./nginx.conf:/etc/nginx/nginx.conf
-#    depends_on:
-#      - demo-frontend
-#      - demo-backend
-
-  ngrok:
-    image: ngrok/ngrok:latest
-    restart: unless-stopped
-    command:
-      - "start"
-      - "--all"
-      - "--config"
-      - "/etc/ngrok.yml"
-    volumes:
-      - ./ngrok.yml:/etc/ngrok.yml
+  nginx:
+    image: nginx:latest
+    container_name: nginx_proxy
     ports:
-      - 4040:4040
+      - "3002:3002"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
     depends_on:
-      - nginx
+      - demo-frontend
+      - demo-backend
+
+#  ngrok:
+#    image: ngrok/ngrok:latest
+#    restart: unless-stopped
+#    command:
+#      - "start"
+#      - "--all"
+#      - "--config"
+#      - "/etc/ngrok.yml"
+#    volumes:
+#      - ./ngrok.yml:/etc/ngrok.yml
+#    ports:
+#      - 4040:4040
+#    depends_on:
+#      - nginx
 
 #volumes:
 #  vcnft-redis:
