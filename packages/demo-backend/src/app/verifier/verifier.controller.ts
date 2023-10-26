@@ -34,7 +34,7 @@ export class VerifierController {
     type: Object,
   })
   @Put("/verify")
-  async requestPresentation(@Body() claims: Array<string>) {
+  async requestPresentation(@Body("claims") claims: Array<string>) {
     return this.verifierService.requestPresentation(claims)
   }
 

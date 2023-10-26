@@ -4,6 +4,17 @@ import {verifyPresentation} from "did-jwt-vc";
 import {getResolver, parseNftDid} from "../nft-did-resolver/resolver";
 import {AccountId} from "caip";
 
+interface VerificationMetadata {
+    verified: boolean
+    message: string
+}
+
+interface VerificationResult {
+    verified: boolean
+    verifiedPresentation: VerifiedPresentation | null
+    metadata: VerificationMetadata[]
+}
+
 export class Verifier {
     private bp: BlockchainProvider;
     private ssi: SSIProvider;
@@ -56,10 +67,12 @@ export class Verifier {
         return await this.verifyNftDidOwnership(sub, accountId, ownershipProof)
     }
 
-    async verifyVcnftPresentationJwt(presentationJwt: string, resolver: Resolver) {
+    async verifyVcnftPresentationJwt(presentationJwt: string, resolver: Resolver) : Promise<VerificationResult> {
 
+        console.log(presentationJwt)
         let verifiedPresentation: VerifiedPresentation | null = await verifyPresentation(presentationJwt, resolver)
-            .catch((e) => {return null})
+            .catch((e) => {
+                return null})
 
         if (!verifiedPresentation || !verifiedPresentation.verified)
             return {
@@ -67,7 +80,7 @@ export class Verifier {
                 verifiedPresentation: null,
                 metadata: [{
                     verified: false,
-                    message: "Failed to verify presentation",
+                    message: "Invalid Presentation. Either the Presentation is invalid or the signature isn't valid.",
                 }],
             }
 
@@ -130,7 +143,7 @@ export class Verifier {
         return {
             verified: verified,
             verifiedPresentation: verifiedPresentation,
-            metadata: verificationMetadata.length > 1 ? verificationMetadata[0] : {},
+            metadata: verificationMetadata,
         }
     }
 

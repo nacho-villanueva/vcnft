@@ -7,6 +7,7 @@ import {
 } from "../common/types";
 import {generateOwnershipProofMessage} from "./utils";
 import {createVerifiablePresentationJwt} from "did-jwt-vc";
+import {parseNftDid} from "../nft-did-resolver/resolver";
 
 export class Holder {
     private blockchainAccount: BlockchainAccount;
@@ -18,6 +19,8 @@ export class Holder {
     }
 
     async generatePresentationPayload(credentials: JWTWithPayload<W3CCredential>[]) {
+        console.log(credentials)
+
         if (credentials.length === 0) throw new Error("No credentials provided")
         const subjects = credentials
             .map(c => c.payload.credentialSubject.id)
@@ -51,5 +54,17 @@ export class Holder {
 
     async signPresentation(payload: JwtVcnftPresentationPayload) {
         return await createVerifiablePresentationJwt(payload, this.didAccount)
+    }
+
+    getTransferNftDidTxDetails(nftDid: string) {
+        const parsedDid = parseNftDid(nftDid)
+
+        if (parsedDid.assetName.namespace.toLowerCase() !== "erc721")
+            throw new Error("Only ERC721 NFTs are supported")
+
+        return {
+            assetId: parsedDid,
+            abi: ["function safeTransferFrom(address from, address to, uint256 tokenId)"]
+        }
     }
 }
