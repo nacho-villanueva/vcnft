@@ -4,7 +4,7 @@ import {
   AssetStatus,
   Credential,
   NftDidCreation,
-  NftDidResolution,
+  NftDidResolution, W3CCredential,
 } from '../common/types';
 import { toNftDid } from './utils';
 
@@ -62,7 +62,7 @@ export class Issuer {
     nftDid: string,
     issuer: string,
     claim: Record<string, any>
-  ): Credential {
+  ): W3CCredential {
     return {
       '@context': ['https://www.w3.org/2018/credentials/v1'],
       type: ['VerifiableCredential', 'NftCredential'],

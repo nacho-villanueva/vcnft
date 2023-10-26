@@ -9,3 +9,11 @@ export function generateOwnershipChallengeMessage(did: string) {
 export function toNftDid(assetId: AssetId) {
   return `did:nft:${assetId.chainId.namespace}_${assetId.chainId.reference}:${assetId.assetName.namespace}_${assetId.assetName.reference}:${assetId.tokenId}`
 }
+
+
+export function generateOwnershipProofMessage(iss: string, sub: string) {
+  return JSON.stringify({
+    iss: iss,
+    sub: sub,
+  })
+}

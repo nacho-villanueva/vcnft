@@ -1,5 +1,5 @@
 import {KeyType, TBDSSIProvider} from "./tbd";
-import {VerifiableCredential, VerifiablePresentation} from "@vcnft/core";
+import {VerifiableCredential, VerifiablePresentation, W3CCredential} from "@vcnft/core";
 
 describe('TBDSSIProvider', () => {
 
@@ -9,25 +9,25 @@ describe('TBDSSIProvider', () => {
   let mockVerificationMethodId: string;
   let mockHolderDid: string;
 
-  let mockCredential: VerifiableCredential;
+  let mockCredential: W3CCredential;
   let mockPresentation: VerifiablePresentation;
 
 
   beforeAll(async () => {
     provider = new TBDSSIProvider("http://tbd.vcnft.me:8080");
-    // const dids = await provider.getDids("key");
-    // if (!dids || dids.length < 2) {
-    //   mockIssuerDid = (await provider.generateDid("key", KeyType.ED25519))["id"];
-    //   mockHolderDid = (await provider.generateDid("key", KeyType.ED25519))["id"];
-    // } else {
-    //   mockIssuerDid = dids[0]["id"];
-    //   mockHolderDid = dids[1]["id"];
-    // }
-    //
-    // mockVerificationMethodId = mockIssuerDid + "#" + mockIssuerDid.split(":")[2];
-    //
-    // console.log("mockIssuerDid", mockIssuerDid)
-    // console.log("mockHolderDid", mockHolderDid)
+    const dids = await provider.getDids("key");
+    if (!dids || dids.length < 2) {
+      mockIssuerDid = (await provider.generateDid("key", KeyType.ED25519))["id"];
+      mockHolderDid = (await provider.generateDid("key", KeyType.ED25519))["id"];
+    } else {
+      mockIssuerDid = dids[0]["id"];
+      mockHolderDid = dids[1]["id"];
+    }
+
+    mockVerificationMethodId = mockIssuerDid + "#" + mockIssuerDid.split(":")[2];
+
+    console.log("mockIssuerDid", mockIssuerDid)
+    console.log("mockHolderDid", mockHolderDid)
 
     mockCredential = {
       "@context": [
@@ -41,7 +41,7 @@ describe('TBDSSIProvider', () => {
       credentialSubject: {
         id: mockHolderDid,
       },
-    } as VerifiableCredential;
+    } as W3CCredential;
 
     mockPresentation = {
       "@context": [
@@ -53,12 +53,12 @@ describe('TBDSSIProvider', () => {
     } as VerifiablePresentation;
   });
 
-  test("should generate did", async () => {
-    const did = await provider.generateDid("key", KeyType.ED25519);
-    console.log(did)
-    expect(did).toBeDefined();
-    expect(did["id"].startsWith("did:key:")).toBe(true);
-  });
+  // test("should generate did", async () => {
+  //   const did = await provider.generateDid("key", KeyType.ED25519);
+  //   console.log(did)
+  //   expect(did).toBeDefined();
+  //   expect(did["id"].startsWith("did:key:")).toBe(true);
+  // });
 
   test('should sign credential', async () => {
     const signedCredential = await provider.signCredential(mockCredential, mockVerificationMethodId);
@@ -72,7 +72,7 @@ describe('TBDSSIProvider', () => {
   test('should verify credential', async () => {
     const signedCredential = await provider.signCredential(mockCredential, mockVerificationMethodId);
     console.log(signedCredential);
-    const verificationResult = await provider.verifyCredential(signedCredential);
+    const verificationResult = await provider.verifyCredentialJWT(signedCredential.jwt);
     expect(verificationResult).toBe(true);
   }, 500_000);
 

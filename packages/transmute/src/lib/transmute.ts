@@ -34,7 +34,7 @@ export class TransmuteSSIProvider implements SSIProvider {
       })).items[0];
     }
 
-    async verifyCredential(credential: VerifiableCredential, suite: Suite): Promise<boolean> {
+    async verifyCredentialJWT(credential: VerifiableCredential, suite: Suite): Promise<boolean> {
       const verification = (await verifiable.credential.verify({
         credential,
         format: ["vc", "vc-jwt"],
@@ -47,7 +47,7 @@ export class TransmuteSSIProvider implements SSIProvider {
       return verification.verified;
     }
 
-  async verifyPresentation(presentation: VerifiablePresentation, suite: Suite, challenge: string): Promise<boolean> {
+  async verifyPresentationJWT(presentation: VerifiablePresentation, suite: Suite, challenge: string): Promise<boolean> {
     return (await verifiable.presentation.verify({
       presentation,
       format: ["vp", "vp-jwt"],

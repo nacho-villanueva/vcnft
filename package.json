@@ -8,6 +8,9 @@
     "demo-backend:dev:docker": "nx serve demo-backend --host=0.0.0.0"
   },
   "private": true,
+  "overrides": {
+    "uint8arrays": "3.1.1"
+  },
   "dependencies": {
     "@decentralized-identity/ion-sdk": "^1.0.1",
     "@decentralized-identity/ion-tools": "^1.1.4",
@@ -25,6 +28,7 @@
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-tabs": "^1.0.4",
     "@radix-ui/react-toast": "^1.1.5",
+    "@sphereon/pex": "^2.2.1-unstable.0",
     "@swc/helpers": "~0.5.2",
     "@tanstack/react-table": "^8.10.7",
     "@transmute/json-web-signature": "^0.7.0-unstable.81",
@@ -33,16 +37,19 @@
     "alchemy-sdk": "^2.10.1",
     "autoprefixer": "^10.4.16",
     "axios": "^1.0.0",
+    "buffer": "^6.0.3",
     "caip": "^1.1.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
+    "did-jwt-vc": "3.1.0",
     "did-resolver": "^4.1.0",
     "dotenv": "^16.3.1",
     "ethers": "^6.8.0",
-    "ethr-did": "^3.0.1",
+    "ethr-did": "^3.0.3",
     "framer-motion": "^10.16.4",
     "jose": "^4.15.4",
     "jsonld-signatures": "^11.2.1",
+    "jwt-decode": "^3.1.2",
     "moment": "^2.29.4",
     "mongoose": "^7.6.2",
     "next": "^13.5.6",

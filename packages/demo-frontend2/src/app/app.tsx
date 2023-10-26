@@ -6,6 +6,7 @@ import React from "react";
 import Home from "@/app/home";
 import Manufacturer from "@/app/manufacturer";
 import {Toaster} from "@/components/ui/toaster";
+import Wallet from "@/app/wallet";
 
 export function App() {
   return (
@@ -13,6 +14,7 @@ export function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/manufacturer/*" element={<Manufacturer />}/>
+        <Route path="/wallet/*" element={<Wallet />}/>
       </Routes>
       <Toaster />
     </div>

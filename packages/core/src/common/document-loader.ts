@@ -4,7 +4,7 @@ import {
   Url,
 } from '@transmute/jsonld-document-loader';
 import { getResolver } from '../nft-did-resolver/resolver';
-import { BlockchainProvider } from './providers';
+import {BlockchainProvider, SSIProvider} from './providers';
 import { Resolver } from 'did-resolver';
 import axios from 'axios';
 
@@ -20,7 +20,7 @@ const contexts: Record<string, any> = {
   'https://identity.foundation/presentation-exchange/submission/v1': pexContext,
 };
 
-export function getDocumentLoader(bp: BlockchainProvider) {
+export function getBaseDocumentLoader(bp: BlockchainProvider, ssi: SSIProvider) {
   const resNft = async (iri: Did) => {
     const resolver = getResolver({ blockchainProvider: bp });
     console.log('resolving ' + iri.toString() + ' using nft-did-resolver');
@@ -38,45 +38,21 @@ export function getDocumentLoader(bp: BlockchainProvider) {
     return data;
   };
 
-  const resKey = async (iri: Did) => {
-    const key = {
-      id: "did:key:z6MkokrsVo8DbGDsnMAjnoHhJotMbDZiHfvxM4j65d8prXUr",
-      type: 'JsonWebKey2020',
-      controller: 'did:key:z6MkokrsVo8DbGDsnMAjnoHhJotMbDZiHfvxM4j65d8prXUr',
-      publicKeyJwk: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        x: 'ijtvFnowiumYMcYVbaz6p64Oz6bXwe2V_9IlCgDR_38',
-      }
-    };
+  const resSsiProvider = async (iri: Did) => {
+    return ssi.resolveDid(iri.toString());
+  }
 
-    const doc = {
-      "@context": [
-        "https://www.w3.org/ns/did/v1",
-        "https://w3id.org/security/suites/jws-2020/v1",
-        {"@vocab":"https://www.w3.org/ns/did/controller-dependent#"}
-      ],
-      id: "did:key:z6MkokrsVo8DbGDsnMAjnoHhJotMbDZiHfvxM4j65d8prXUr",
-      verificationMethod: [key],
-      assertionMethod: ["did:key:z6MkokrsVo8DbGDsnMAjnoHhJotMbDZiHfvxM4j65d8prXUr"],
-      authentication: ["did:key:z6MkokrsVo8DbGDsnMAjnoHhJotMbDZiHfvxM4j65d8prXUr"],
-    };
-
-    console.log('resolving ' + iri.toString() + ' using key');
-
-    const ret = {
-      contextUrl: null,
-      documentUrl: iri,
-      document: doc,
-    };
-    console.log(ret)
-    return ret;
-  };
-
-  return documentLoaderFactory.build({
+  return {
     ['did:nft']: resNft,
     ['https:']: resHttps,
-    ['did:key']: resKey,
+    ['did:web']: resSsiProvider,
+    ['did:key']: resSsiProvider,
+    ['did:ion']: resSsiProvider,
+  };
+}
 
-  });
+export function getDocumentLoader(bp: BlockchainProvider, ssi: SSIProvider) {
+  const baseDocumentLoader = getBaseDocumentLoader(bp, ssi);
+
+  return documentLoaderFactory.build(baseDocumentLoader);
 }

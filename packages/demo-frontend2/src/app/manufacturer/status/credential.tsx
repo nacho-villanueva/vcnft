@@ -9,6 +9,7 @@ import {apiInstance} from "@/utils/Axios";
 import {cn, truncateAddress, truncateDid} from "@/utils/utils";
 import moment from "moment";
 import {Skeleton} from "@/components/ui/skeleton";
+import {toast} from "@/components/ui/use-toast";
 
 const Credential = ({issuer}: { issuer: string }) => {
   const [data, setData] = useState<Record<any, any>>({});
@@ -18,6 +19,15 @@ const Credential = ({issuer}: { issuer: string }) => {
   useEffect(() => {
     apiInstance.get(`/issuer/${issuer}/issue/vcnft/${id}`)
       .then(r => {console.log(r.data); setData(r.data)})
+        .catch(r => {
+            if(r.response.status === 500) {
+                toast({
+                    variant: "destructive",
+                    title: "Server Error",
+                    description: "We are having trouble with this request. Please try refreshing later."
+                })
+            }
+        })
       .finally(() => setLoading(false))
   }, [])
 

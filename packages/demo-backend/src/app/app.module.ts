@@ -8,6 +8,7 @@ import {IssuerModule} from "./issuer/issuer.module";
 import {VcnftModule} from "./vcnft/vcnft.module";
 import {ConfigModule} from "@nestjs/config";
 import {CredentialsModule} from "./credentials/credentials.module";
+import {VerifierModule} from "./verifier/verifier.module";
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import {CredentialsModule} from "./credentials/credentials.module";
     IssuerModule,
     VcnftModule,
     CredentialsModule,
+    VerifierModule,
     MongooseModule.forRoot(`mongodb://mongoadmin:bdung@${process.env.MONGO_HOST}`)],
   controllers: [AppController],
   providers: [AppService],

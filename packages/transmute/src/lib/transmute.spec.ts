@@ -95,7 +95,7 @@ describe('TransmuteSSIProvider', () => {
     const provider = new TransmuteSSIProvider(getDocumentLoader(mockBlockchainProvider));
     const signedCredential = await provider.signCredential(mockCredential, mockSuite);
     console.log(signedCredential);
-    const verificationResult = await provider.verifyCredential(signedCredential, mockSuite);
+    const verificationResult = await provider.verifyCredentialJWT(signedCredential, mockSuite);
     expect(verificationResult).toBe(true);
   }, 500_000);
 
@@ -104,7 +104,7 @@ describe('TransmuteSSIProvider', () => {
     const challenge = "some-challenge-string";
     const signedPresentation = await provider.signPresentation(mockPresentation, mockSuite, challenge);
     console.log("signed", signedPresentation);
-    const verificationResult = await provider.verifyPresentation(signedPresentation, mockSuite, challenge);
+    const verificationResult = await provider.verifyPresentationJWT(signedPresentation, mockSuite, challenge);
     expect(verificationResult).toBe(true);
   }, 500_000);
 

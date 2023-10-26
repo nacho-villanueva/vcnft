@@ -1,5 +1,6 @@
-import {Credential, JWT, JWTWithPayload, SSIProvider} from "@vcnft/core";
+import {Credential, JWT, JWTWithPayload, SSIProvider, W3CCredential} from "@vcnft/core";
 import axios, {Axios} from "axios";
+import {DIDDocument, DIDResolutionOptions, ParsedDID, Resolver} from "did-resolver";
 
 
 export enum KeyType {
@@ -68,7 +69,7 @@ export class TBDSSIProvider implements SSIProvider {
       .catch(err => {console.error(err.response?.data); return null});
   }
 
-  async signCredential(credential: Credential, verificationMethodId?: string): Promise<JWTWithPayload<Credential>> {
+  async signCredential(credential: W3CCredential, verificationMethodId?: string): Promise<JWTWithPayload<Credential>> {
     const data = Object.fromEntries(
       Object.entries(credential.credentialSubject)
         .filter(([key, value]) => key !== "id"))
@@ -89,14 +90,14 @@ export class TBDSSIProvider implements SSIProvider {
     }
   }
 
-  async verifyCredential(credential: JWTWithPayload<Credential>): Promise<boolean> {
+  async verifyCredentialJWT(credentialJwt: JWT): Promise<boolean> {
     return this.axios.put('/v1/credentials/verification', {
-      credentialJwt: credential.jwt,
+      credentialJwt: credentialJwt,
     }).then(res => res.data["verified"])
       .catch(err => {console.error(err.response?.data); return null});
   }
 
-  async verifyPresentation(JWTWithPayload: JWT): Promise<boolean> {
+  async verifyPresentationJWT(JWTWithPayload: JWT): Promise<boolean> {
     return this.axios.put('/v1/presentations/verification', {
       presentationJwt: JWTWithPayload,
     }).then(res => res.data["verified"])

@@ -1,6 +1,6 @@
-import { ethers, Interface, JsonRpcProvider, Wallet } from 'ethers';
-import {BlockchainProvider } from '@vcnft/core';
-import { AssetId, AssetType, ChainId } from 'caip';
+import {ethers, Interface, JsonRpcProvider, Wallet} from 'ethers';
+import {BlockchainProvider} from '@vcnft/core';
+import {AssetId, AssetType, ChainId} from 'caip';
 import {AssetStatus, ResolvedAsset} from "./types";
 
 export class EthersBlockchainProvider implements BlockchainProvider {
@@ -17,6 +17,10 @@ export class EthersBlockchainProvider implements BlockchainProvider {
         new JsonRpcProvider(jsonRpcUrl)
       );
     });
+  }
+
+  getProviderJsonRpcUrl(chainId: ChainId): string {
+    return EthersBlockchainProvider.getProvider(chainId)._getConnection().url;
   }
 
   // Method to get the provider for a given chainId
@@ -145,5 +149,9 @@ export class EthersBlockchainProvider implements BlockchainProvider {
   setSigner(privateKey: string): EthersBlockchainProvider {
     this.signerKey = privateKey;
     return this;
+  }
+
+  getAddressFromSignature(message: string, signature: string): string {
+    return ethers.verifyMessage(message, signature);
   }
 }
