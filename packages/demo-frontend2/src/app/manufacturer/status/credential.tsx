@@ -45,6 +45,25 @@ const Credential = ({issuer}: { issuer: string }) => {
     a.click();
   }
 
+  const handleSendToWallet = () => {
+    apiInstance.post(`/issuer/${issuer}/issue/vcnft/${id}/send`)
+        .then(r => {
+            toast({
+                title: "Sent to wallet",
+                description: "Refresh wallet to see new credential"
+            })
+        })
+        .catch(r => {
+            if(r.response.status === 500) {
+                toast({
+                    variant: "destructive",
+                    title: "Server Error",
+                    description: "We are having trouble with this request. Please try refreshing later."
+                })
+            }
+        })
+  }
+
   const displayCrendentialQr = () => {
 
   }
@@ -95,6 +114,7 @@ const Credential = ({issuer}: { issuer: string }) => {
         </CardContent>
         <CardFooter className={"flex justify-end gap-4"}>
           <Button variant={"ghost"} size={"sm"} disabled={!isIssued} onClick={handleCredentialExport}>Export Credential</Button>
+          <Button variant={"ghost"} size={"sm"} disabled={!isIssued} onClick={handleSendToWallet}>Send to Wallet</Button>
         </CardFooter>
       </Card>
       }

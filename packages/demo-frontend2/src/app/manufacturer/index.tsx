@@ -86,17 +86,16 @@ const Manufacturer = () => {
                 href={"/manufacturer/status"}
               />
             </div>
+                <Button asChild variant={"ghost"} className={"min-w-[420px] flex flex-row align-center justify-center gap-2"}>
+                    <Link to={"/"}>
+                        <AiFillCaretLeft className={"w-5 h-5"}/> Back to Demo
+                    </Link>
+                </Button>
               </>} />
 
             <Route path={"issue"} element={<Issue/>}/>
             <Route path={"status/*"} element={<ManufacturerStatus />}/>
           </Routes>
-
-          <Button asChild variant={"ghost"} className={"min-w-[420px] flex flex-row align-center justify-center gap-2"}>
-            <Link to={"/"}>
-              <AiFillCaretLeft className={"w-5 h-5"}/> Back to Demo
-            </Link>
-          </Button>
 
       </div>
 

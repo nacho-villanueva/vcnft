@@ -9,6 +9,11 @@ import {useWallet} from "@/utils/vcnft";
 import {JWTWithPayload, W3CCredential} from "@vcnft/core";
 import CredentialCard from "@/app/wallet/credential";
 import {TransferDialog} from "@/app/wallet/requests/transfer";
+import {AiFillCaretLeft} from "react-icons/ai";
+import {Link} from "react-router-dom";
+import {Input} from "@/components/ui/input";
+import {toast} from "@/components/ui/use-toast";
+import {CopyIcon} from "@radix-ui/react-icons";
 
 const WalletMain = () => {
     const walletContext = useWallet();
@@ -23,7 +28,35 @@ const WalletMain = () => {
         }
     }
 
+    const didInputRef = useRef<HTMLInputElement>(null);
+    const addressInputRef = useRef<HTMLInputElement>(null);
+    function handleDidCopy() {
+        didInputRef.current?.select();
+        didInputRef.current?.setSelectionRange(0, 99999);
+
+        if (attributes.ethrDid?.did)
+            navigator.clipboard.writeText(attributes.ethrDid?.did);
+
+        toast({
+            title: "Copied DID to clipboard"
+        })
+    }
+
+    function handleAddressCopy() {
+        addressInputRef.current?.select();
+        addressInputRef.current?.setSelectionRange(0, 99999);
+
+        if (attributes.account?.address)
+            navigator.clipboard.writeText(attributes.account?.address);
+
+        toast({
+            title: "Copied address to clipboard"
+        })
+    }
+
     return (
+        <>
+            <Button variant={'link'} asChild><Link to={"/"}><AiFillCaretLeft />Back to demo</Link></Button>
         <div className={"p-5 min-w-screen min-h-screen flex flex-col items-center"}>
             <Card className={"max-w-[500px] w-full p-2"}>
                 {!attributes.loading && <>{!attributes.account && <><CardTitle className={"text-center"}>
@@ -36,8 +69,16 @@ const WalletMain = () => {
                         {!attributes.account &&
                             <ConnectWalletButton onConnect={functions.connectWalletHandler} connecting={attributes.connecting}/>}
                         {attributes.account && <div>
-                            <p><b>Address:</b> {truncateAddress(attributes.account.address)}</p>
-                            <p><b>DID:</b> {truncateDid(attributes.ethrDid?.did ?? "")}</p>
+                            <span className={"flex items-center gap-1"}>
+                                <b>DID:</b>
+                                <Input className={"max-w-[80%] truncate border-none h-2 px-1"} readOnly value={attributes.account?.address} ref={didInputRef}/>
+                                <Button size={"icon"} className={"w-6 h-6"} variant={"ghost"} onClick={handleAddressCopy}><CopyIcon /></Button>
+                            </span>
+                            <span className={"flex items-center gap-1"}>
+                                <b>DID:</b>
+                                <Input className={"max-w-[80%] truncate border-none h-2 px-1"} readOnly value={attributes.ethrDid?.did} ref={didInputRef}/>
+                                <Button size={"icon"} className={"w-6 h-6"} variant={"ghost"} onClick={handleDidCopy}><CopyIcon /></Button>
+                            </span>
                             <p><b>Network:</b> <span className={"capitalize"}>{attributes.network?.name}</span></p>
                             <div className={"flex items-center gap-3"}>
                                 <p><b>Signer Expiration:</b>&nbsp;
@@ -75,6 +116,7 @@ const WalletMain = () => {
 
             <input type={"file"} hidden ref={inputFileRef} onInput={functions.handleImportVCNFT}/>
         </div>
+        </>
     )
 }
 

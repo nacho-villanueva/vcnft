@@ -1,8 +1,20 @@
-import {Controller, Get, Post, Param, Put, Res, HttpStatus, HttpCode, Body} from '@nestjs/common';
+import {
+    Controller,
+    Get,
+    Post,
+    Param,
+    Put,
+    Res,
+    HttpStatus,
+    HttpCode,
+    Body,
+    MethodNotAllowedException
+} from '@nestjs/common';
 import {IssuerService} from "./issuer.service";
 import {IssueSessionService} from "../IssueSession/issue-session.service";
 import {ApiBody, ApiProperty, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {Issuer} from "./issue.schema";
+import {TransferSessionService} from "../transfer-session/transfer-session.service";
 
 @ApiTags('Issuer')
 @Controller('issuer')
@@ -10,7 +22,8 @@ export class IssuerController {
 
     constructor(
         private readonly issuerService: IssuerService,
-        private readonly issueSessionService: IssueSessionService
+        private readonly issueSessionService: IssueSessionService,
+        private readonly transferSessionService: TransferSessionService
     ) {
     }
 
@@ -146,6 +159,16 @@ export class IssuerController {
     @Get("/:name/issue/vcnft")
     async getIssuedCredentials(@Param("name") name: string) {
         return await this.issueSessionService.findAllByIssuer(name);
+    }
+
+    @ApiProperty({description: "Send Issued Credential to Wallet"})
+    @HttpCode(200)
+    @Post("/:name/issue/vcnft/:id/send")
+    async sendIssuedCredential(@Param("name") name: string, @Param("id") id: string) {
+        const issued = await this.issuerService.getIssuedCredential(id);
+        if(issued.status === "PENDING") throw new MethodNotAllowedException("Credential not yet issued.");
+        return await this.transferSessionService.setTransferCredentials(
+            issued.issueParams.forAddress, [JSON.stringify(issued.credential)]);
     }
 
 
