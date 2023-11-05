@@ -1,4 +1,4 @@
-import {ethers, Interface, JsonRpcProvider, Wallet} from 'ethers';
+import {ethers, Interface, JsonRpcProvider, TransactionResponse, Wallet} from 'ethers';
 import {BlockchainProvider} from '@vcnft/core';
 import {AssetId, AssetType, ChainId} from 'caip';
 import {AssetStatus, ResolvedAsset} from "./types";
@@ -153,5 +153,21 @@ export class EthersBlockchainProvider implements BlockchainProvider {
 
   getAddressFromSignature(message: string, signature: string): string {
     return ethers.verifyMessage(message, signature);
+  }
+
+  async getBalance(chainId: ChainId): Promise<string> {
+    const provider = EthersBlockchainProvider.getProvider(chainId);
+    const signer = await provider.getSigner();
+    return provider.getBalance(signer.address).then((balance) => balance.toString());
+  }
+
+  async faucet(chainId: ChainId, address: string): Promise<string | TransactionResponse> {
+    const provider = EthersBlockchainProvider.getProvider(chainId);
+    const tx = await provider.getSigner(0).then((signer) => signer.sendTransaction({
+      to: address,
+      value: ethers.parseEther('0.1')
+    }))
+
+    return tx.hash;
   }
 }

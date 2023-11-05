@@ -1,5 +1,5 @@
 import {ApiTags} from "@nestjs/swagger";
-import {Controller, Get, Inject} from "@nestjs/common";
+import {Body, Controller, Get, Inject, Param, Post, Query} from "@nestjs/common";
 import {VcnftService} from "./vcnft.service";
 
 @ApiTags('VCNFT')
@@ -14,6 +14,17 @@ export class VcnftController {
   async getHealth() {
     return this.vcnftService.getSSIProvider().health();
   }
+
+  @Post("/faucet/:chain")
+  async faucet(@Body() body: {address: string}, @Param("chain") chain: string) {
+    return this.vcnftService.faucet(chain, body.address);
+  }
+
+  @Get("/faucet/:chain")
+  async getFaucetBalance(@Param("chain") chain: string) {
+    return this.vcnftService.getFaucetBalance(chain);
+  }
+
 
 
 

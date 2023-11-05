@@ -82,4 +82,17 @@ export class VcnftService {
     return this.resolver;
   }
 
+  async faucet(chainId:string, address: string) {
+    return this.getBlockchainProvider().faucet(
+      new ChainId({namespace: "eip155", reference: chainId}),
+      address
+    )
+  }
+
+  async getFaucetBalance(chainId: string) {
+    return this.getBlockchainProvider().getBalance(
+      new ChainId({namespace: "eip155", reference: chainId})
+    )
+  }
+
 }
