@@ -86,7 +86,7 @@ export const WalletContextProvider = ({ children }: {children: ReactNode}) => {
 
             console.log("newcred", newCredentials)
             credentials = newCredentials.map(c => JSON.parse(c))
-                .filter((c: any) => credentials.some((cred) => cred.jwt !== c.jwt))
+                .filter((c: any) => !credentials.some((cred) => cred.jwt === c.jwt))
                 .concat(credentials)
             console.log("cred", credentials)
 
