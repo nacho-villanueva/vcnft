@@ -79,7 +79,7 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
     depends_on:
-      - demo-frontend
+      - demo-frontend2
       - demo-backend
 
 #  ngrok:
