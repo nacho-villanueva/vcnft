@@ -7,7 +7,7 @@ import {VcnftService} from "./vcnft.service";
 export class VcnftController {
 
   constructor(
-    @Inject(VcnftService) private readonly vcnftService: any
+    @Inject(VcnftService) private readonly vcnftService: VcnftService,
   ) {}
 
   @Get("/ssi-provider/health")

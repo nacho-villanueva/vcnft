@@ -19,3 +19,21 @@ export function truncateAddress(address?: string) {
 export function getEthScanLink (address: string, network: Network)  {
     return `https://${network.name === "homestead" ? "" : network.name + "."}etherscan.io/tx/${address}`
 }
+
+export function getCoinbaseLink ()  {
+    // @ts-ignore
+    let userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+    if (/android/i.test(userAgent)) {
+        return "https://play.google.com/store/apps/details?id=org.toshi&hl=en&gl=US";
+    }
+
+    // iOS detection from: http://stackoverflow.com/a/9039885/177710
+    // @ts-ignore
+    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+        return "https://apps.apple.com/us/app/coinbase-wallet-nfts-crypto/id1278383455";
+    }
+
+    return "https://www.coinbase.com/wallet";
+
+}

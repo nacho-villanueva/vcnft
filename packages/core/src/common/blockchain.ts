@@ -163,10 +163,10 @@ export class EthersBlockchainProvider implements BlockchainProvider {
 
   async faucet(chainId: ChainId, address: string): Promise<string | TransactionResponse> {
     const provider = EthersBlockchainProvider.getProvider(chainId);
-    const tx = await provider.getSigner(0).then((signer) => signer.sendTransaction({
+    const tx = await this.getSigner(chainId).sendTransaction({
       to: address,
-      value: ethers.parseEther('0.1')
-    }))
+      value: ethers.parseEther('0.001')
+    })
 
     return tx.hash;
   }

@@ -83,7 +83,10 @@ export class VcnftService {
   }
 
   async faucet(chainId:string, address: string) {
-    return this.getBlockchainProvider().faucet(
+    const bp = this.getBlockchainProvider()
+    bp.setSigner(process.env["SIGNER_DEFAULT"])
+
+    return bp.faucet(
       new ChainId({namespace: "eip155", reference: chainId}),
       address
     )

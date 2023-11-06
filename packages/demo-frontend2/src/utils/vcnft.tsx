@@ -9,35 +9,40 @@ import {toast} from "@/components/ui/use-toast";
 
 type WalletContextType = {
     attributes: {
-        ethAvailable: boolean,
-        connected: boolean,
         account: JsonRpcSigner | null,
-        network: Network | null,
-        ethrDid: EthrDID | null,
-        signingDelegate: { kp: KeyPair, expire: string } | null,
         activeCredentials: JWTWithPayload<W3CCredential>[],
-        loading: boolean,
-        renewing: boolean,
+        balance: bigint,
+        balanceUpdated: boolean,
+        block: number,
+        connected: boolean,
         connecting: boolean,
+        ethAvailable: boolean,
+        ethrDid: EthrDID | null,
+        loading: boolean,
+        network: Network | null,
+        renewing: boolean,
+        signingDelegate: { kp: KeyPair, expire: string } | null,
+        setup: { state: "SETUP" | "LOADED" | "FAILED", error: any, message: string | null }
     }
 
     functions: {
-        renewDelegate: () => void,
-        handleImportVCNFT: (e: FormEvent<HTMLInputElement>) => void,
-        createVcnftHolder: () => Holder | null,
         connectWalletHandler: () => void,
+        createPresentation: (creds: JWTWithPayload<W3CCredential>[]) => Promise<string | undefined>,
+        createVcnftHolder: () => Holder | null,
+        handleImportVCNFT: (e: FormEvent<HTMLInputElement>) => void,
         handleUnloadCredential: (cred: JWTWithPayload<W3CCredential>) => void
         handleVerifyCredential: (cred: JWTWithPayload<W3CCredential>) => Promise<{
             verified: boolean,
             error?: string
         } | undefined>,
-        createPresentation: (creds: JWTWithPayload<W3CCredential>[]) => Promise<string | undefined>
+        renewDelegate: () => void,
+        faucet: () => void
     }
 }
 
 const WalletContext = createContext<WalletContextType | null>(null)
 
-export const WalletContextProvider = ({ children }: {children: ReactNode}) => {
+export const WalletContextProvider = ({children}: { children: ReactNode }) => {
     const eth = typeof window !== 'undefined' ? (window as any).ethereum : undefined;
     const provider = new ethers.BrowserProvider(eth);
 
@@ -46,13 +51,41 @@ export const WalletContextProvider = ({ children }: {children: ReactNode}) => {
     const [ethrDid, setEthrDid] = useState<EthrDID | null>(null);
     const [signingDelegate, setSigningDelegate] = useState<{ kp: KeyPair, expire: string } | null>(null);
     const [activeCredentials, setActiveCredentials] = useState<JWTWithPayload<W3CCredential>[]>([]);
+    const [balance, setBalance] = useState<bigint>(BigInt(0));
 
     const [connecting, setConnecting] = useState(false);
     const [renewing, setRenewing] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [currentBlock, setCurrentBlock] = useState(0);
+    const [balanceUpdated, setBalanceUpdated] = useState(false);
 
-    function loadDelegate() {
-        const delegate = localStorage.getItem("wallet.signingDelegate")
+    const [setup, setSetup] = useState({
+        state: "SETUP" as "SETUP" | "LOADED" | "FAILED",
+        error: null as any,
+        message: null as string | null
+    });
+
+    function hasValidDelegate(addr: string) {
+        console.log("hasValidDelegate", addr)
+
+        const delegate = localStorage.getItem(`wallet.${addr}.signingDelegate`)
+        console.log("delegate", delegate)
+        if (!delegate) return false;
+
+        const parsed = JSON.parse(delegate)
+        console.log("parsed", parsed)
+        if (!parsed) return false;
+
+        const expire = moment(parsed.expire)
+        const now = moment().local()
+
+        console.log("expire", expire, now, expire.isAfter(now))
+        return expire.isAfter(now)
+    }
+
+    function loadDelegate(addr: string) {
+        setSetup(s => ({...s, message: "Loading signing delegate..."}))
+        const delegate = localStorage.getItem(`wallet.${addr}.signingDelegate`)
         if (!delegate) return null;
 
         const parsed = JSON.parse(delegate)
@@ -61,17 +94,69 @@ export const WalletContextProvider = ({ children }: {children: ReactNode}) => {
         return parsed
     }
 
-    function loadEthrDid(account: JsonRpcSigner, network: Network) {
-        const del = loadDelegate()
+    const renewDelegate = async (did: EthrDID, acc: JsonRpcSigner) => {
+        console.log("renewing delegate")
+        setRenewing(true)
+        try {
+            const expire = 30 * 24 * 60 * 60; // 30 days
+            const {kp, txHash} = await did.createSigningDelegate(
+                DelegateTypes.sigAuth,
+                expire
+            )
 
-        const ethrDid = new EthrDID({
+            const delegate = {
+                kp: kp,
+                expire: moment().local().add(expire, "seconds").toISOString()
+            }
+
+            setSigningDelegate(delegate)
+            localStorage.setItem(`wallet.${acc.address}.signingDelegate`, JSON.stringify(delegate))
+        } catch (e) {
+            setSetup(s => ({...s, message: "Failed to renew signing delegate"}))
+            console.error("Error renewing delegates", e)
+            setRenewing(false)
+        }
+        setRenewing(false)
+    }
+
+    async function loadEthrDid(account: JsonRpcSigner, network: Network) {
+
+        let del;
+        if(hasValidDelegate(account.address))
+            del = await loadDelegate(account.address)
+
+        let ethrDid = new EthrDID({
             identifier: account.address,
             chainNameOrId: network.chainId,
             provider: provider,
             privateKey: del?.kp.privateKey
         })
 
+        if (!hasValidDelegate(account.address)) {
+            console.log("Delegates expired")
+
+            let timePassed = 0
+            const inter = setInterval(() => {
+                setSetup(s => ({...s, message: `Delegates expired.
+                Renewing... This may take a minute(${timePassed}s) \n This will only on your first connection`}))
+                timePassed += 1
+            }, 1000)
+            await renewDelegate(ethrDid, account)
+
+            clearInterval(inter)
+        }
+
         setEthrDid(ethrDid);
+    }
+
+    async function updateBalance(addr: string) {
+        let b = await provider.getBalance(addr);
+        setBalance(v => {
+            console.log("balance", addr, b)
+            if (v !== b) setBalanceUpdated(false)
+            return b
+        })
+        return b;
     }
 
     async function loadCredentials(address: string) {
@@ -79,16 +164,16 @@ export const WalletContextProvider = ({ children }: {children: ReactNode}) => {
 
         const transfers = await apiInstance.get(`/holder/credential/transfer/${address}`)
             .then(r => r.data as any[])
-            .catch(r => {return []})
+            .catch(r => {
+                return []
+            })
 
         const newCredentials = transfers.map(c => c.credentials).flat()
         if (newCredentials.length > 0) {
 
-            console.log("newcred", newCredentials)
             credentials = newCredentials.map(c => JSON.parse(c))
                 .filter((c: any) => !credentials.some((cred) => cred.jwt === c.jwt))
                 .concat(credentials)
-            console.log("cred", credentials)
 
             localStorage.setItem("wallet.vcnft", JSON.stringify(credentials))
 
@@ -98,82 +183,106 @@ export const WalletContextProvider = ({ children }: {children: ReactNode}) => {
         if (credentials) setActiveCredentials(credentials)
     }
 
-    useEffect(() => {
-        async function loadWallet() {
-            if (eth) {
-                provider.listAccounts().then(async (acc) => {
-                    if (acc.length > 0) {
-                        const acc = await provider.getSigner();
-                        setAccount(acc);
+    async function loadWallet(connect: boolean = false) {
+        if (eth) {
+            setSetup({state: "SETUP", error: null, message: "Fetching accounts..."})
 
-                        const network = await provider.getNetwork();
-                        setNetwork(network);
+            provider.listAccounts().then(async (acc) => {
+                if (acc.length > 0 || connect) {
+                    const acc = await provider.getSigner();
+                    setAccount(acc);
 
-                        if(!acc || !network) throw new Error("Failed to load wallet")
-                        loadEthrDid(acc, network)
-                        await loadCredentials(acc.address)
+                    setSetup({state: "SETUP", error: null, message: "Fetching network..."})
+
+                    const network = await provider.getNetwork();
+                    setNetwork(network);
+
+                    if (!acc || !network) {
+                        setSetup({state: "FAILED", error: null, message: "Failed to load blockchain wallet"})
+                        return;
                     }
-                })
-                    .catch((e) => {
-                      toast({
-                            variant: "destructive",
-                            title: "Failed to load wallet",
-                            description: "There was an error while trying to load the wallet. Please try again.",
-                      })
+
+                    provider.on("block", (block) => {
+                        updateBalance(acc.address)
+                        setCurrentBlock(block)
                     })
-                    .finally(() => setLoading(false))
 
-            }
+                    eth.on("accountsChanged", async () => {
+                        await unloadWallet()
+
+                        await loadWallet()
+                        setLoading(true)
+                        console.log("accounts changed")
+                    })
+
+                    setSetup({state: "SETUP", error: null, message: "Loading balance..."})
+
+                    let bal = await updateBalance(acc.address)
+                    if (bal <= BigInt(10000000000000)) {
+                        setSetup({state: "SETUP", error: null, message: "Balance too low. Requesting refill from faucet..."})
+                        await faucet(acc.address, network.chainId.toString())
+
+                        if (!hasValidDelegate(acc.address)) {
+                            let timePassed = 0
+                            while (bal <= BigInt(100_000_000)) {
+                                setSetup({state: "SETUP", error: null, message: `Balance too low. Refilling funds... This may take a minute (${timePassed}s)`})
+                                await new Promise(r => setTimeout(r, 1000))
+                                timePassed += 1
+                                bal = await updateBalance(acc.address)
+                            }
+                        }
+                    }
+
+                    setSetup({state: "SETUP", error: null, message: "Loading Ethr DID..."})
+
+                    await loadEthrDid(acc, network)
+
+                    setSetup({state: "SETUP", error: null, message: "Loading credentials..."})
+
+                    await loadCredentials(acc.address)
+
+                    setSetup({state: "SETUP", error: null, message: "Loading block..."})
+
+                    setCurrentBlock(await provider.getBlockNumber())
+                }
+            })
+                .catch((e) => {
+                    toast({
+                        variant: "destructive",
+                        title: "Failed to load wallet",
+                        description: "There was an error while trying to load the wallet. Please try again.",
+                    })
+                    setSetup({state: "FAILED", error: e, message: "Failed to load Wallet. Please try again"})
+                })
+                .finally(() => {
+                    setLoading(false)
+                    setSetup({state: "LOADED", error: null, message: null})
+                })
         }
+    }
 
+    async function unloadWallet() {
+        await provider.removeAllListeners("block")
+        await eth.removeAllListeners("accountsChanged")
+        setAccount(null)
+        setNetwork(null)
+        setEthrDid(null)
+    }
+
+
+    useEffect(() => {
         loadWallet().then(r => console.log("loaded"))
+
+        return () => {
+            unloadWallet()
+        };
     }, []);
 
     const connectWalletHandler = async () => {
         if (eth) {
-            setConnecting(true);
-            let signer: JsonRpcSigner;
-            try {
-                signer = await provider.getSigner();
-            } catch (e) {
-                setConnecting(false);
-                return;
-            }
-
-            setAccount(signer)
-            const network = await provider.getNetwork();
-            setNetwork(network);
-
-            loadEthrDid(signer, network)
-            setConnecting(false)
+            loadWallet(true).then(r => console.log("loaded"))
         }
     };
-
-    const renewDelegate = async () => {
-        if (ethrDid) {
-            setRenewing(true)
-            try {
-                const expire = 30 * 24 * 60 * 60; // 30 days
-                const {kp, txHash} = await ethrDid.createSigningDelegate(
-                    DelegateTypes.sigAuth,
-                    expire
-                )
-
-                const delegate = {
-                    kp: kp,
-                    expire: moment().local().add(expire, "seconds").toISOString()
-                }
-
-                setSigningDelegate(delegate)
-                localStorage.setItem("wallet.signingDelegate", JSON.stringify(delegate))
-
-                loadEthrDid(account as JsonRpcSigner, network as Network)
-            } catch (e) {
-                setRenewing(false)
-            }
-            setRenewing(false)
-        }
-    }
 
     const handleImportVCNFT = (e: FormEvent<HTMLInputElement>) => {
         e.currentTarget?.files?.[0].text().then((text) => {
@@ -245,28 +354,67 @@ export const WalletContextProvider = ({ children }: {children: ReactNode}) => {
         setActiveCredentials(credentials)
     }
 
+    const faucet = async (addr: string, chain: string) => {
+        setBalanceUpdated(true)
+        return await apiInstance
+            .post("/vcnft/faucet/" + chain,
+                {address: addr})
+            .then(r => {
+                toast({
+                    title: "Refilled",
+                    description: "Your wallet has been refilled with 0.001 ETH",
+                })
+
+                return r.data
+            })
+            .catch(() => {
+                toast({
+                    variant: "destructive",
+                    title: "Failed to refill wallet",
+                    description: "There was an error while trying to refill the wallet. Please try again.",
+                })
+                setBalanceUpdated(false)
+                return undefined
+            })
+    }
+
+    const handleFaucet = async () => {
+        if (!account || !network) return;
+        await faucet(account.address, network.chainId.toString())
+    }
+
+    const handleRenewDelegate = async () => {
+        if (!account || !ethrDid) return;
+        await renewDelegate(ethrDid, account)
+    }
+
     const contextValue: WalletContextType = {
         attributes: {
-            ethAvailable: !!eth,
-            connected: !!account && !!network && !!ethrDid,
             account: account,
-            network: network,
-            ethrDid: ethrDid,
-            signingDelegate: signingDelegate,
             activeCredentials: activeCredentials,
-            loading: loading,
-            renewing: renewing,
+            balance: balance,
+            balanceUpdated: balanceUpdated,
+            block: currentBlock,
+            connected: !!account && !!network && !!ethrDid,
             connecting: connecting,
+            ethAvailable: !!eth,
+            ethrDid: ethrDid,
+            loading: loading,
+            network: network,
+            renewing: renewing,
+            signingDelegate: signingDelegate,
+            setup: setup
         },
 
         functions: {
             connectWalletHandler: connectWalletHandler,
-            renewDelegate: renewDelegate,
+            renewDelegate: handleRenewDelegate,
             handleImportVCNFT: handleImportVCNFT,
             handleUnloadCredential: handleUnloadCredential,
             handleVerifyCredential: handleVerifyCredential,
             createVcnftHolder: createVcnftHolder,
             createPresentation: createPresentation,
+            faucet: handleFaucet,
         }
     }
 

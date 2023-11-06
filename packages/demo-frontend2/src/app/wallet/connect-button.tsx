@@ -7,12 +7,12 @@ const ConnectWalletButton = ({onConnect, connecting}: { onConnect: () => void, c
             <Button variant={"ghost"}
                     className={"bg-orange-500/30 hover:bg-orange-500/90 hover:text-white/95 font-semibold w-1/2"}
                     onClick={onConnect} disabled={!eth || connecting}>
-                {!connecting ? "Connect Metamask" : <><LoadingSpinner /> Connecting...</>}
+                {!connecting ? "Connect Wallet" : <><LoadingSpinner /> Connecting...</>}
             </Button>
             {!eth && (
                 <div className={"text-center"}>
-                    <p className={"text-red-500"}>Uh oh. Seems like you don't have Metamask.</p>
-                    <p className={"text-red-500"}>Please install Metamask to continue</p>
+                    <p className={"text-red-500"}>Uh oh. Seems like you don't have an Ethereum wallet installed.</p>
+                    <p className={"text-red-500"}>Please install one to continue</p>
                 </div>
             )}
         </div>
