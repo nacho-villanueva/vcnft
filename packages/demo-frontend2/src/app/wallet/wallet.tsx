@@ -116,7 +116,7 @@ const WalletMain = () => {
                                     className={cn("flex items-center gap-1", attributes.balance <= 10_000 && "text-red-500")}>
                                 <b>Balance: </b>
                                 <span>{formatEther(attributes.balance).slice(0, 8).replace(/\.?0+$/g, "")}</span>
-                                    {!attributes.balanceUpdated && attributes.balance <= BigInt(100_000_000) &&
+                                    {!attributes.balanceUpdated && attributes.balance <= BigInt(10_000_000_000_000) &&
                                         <Button size={"sm"} variant={"secondary"}
                                                 className={"text-xs p-1 h-5 bg-red-500 text-white hover:text-black"}
                                                 onClick={functions.faucet}>

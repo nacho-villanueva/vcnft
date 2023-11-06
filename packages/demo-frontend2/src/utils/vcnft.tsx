@@ -224,7 +224,7 @@ export const WalletContextProvider = ({children}: { children: ReactNode }) => {
 
                         if (!hasValidDelegate(acc.address)) {
                             let timePassed = 0
-                            while (bal <= BigInt(100_000_000)) {
+                            while (bal <= BigInt(10000000000000)) {
                                 setSetup({state: "SETUP", error: null, message: `Balance too low. Refilling funds... This may take a minute (${timePassed}s)`})
                                 await new Promise(r => setTimeout(r, 1000))
                                 timePassed += 1
@@ -362,7 +362,7 @@ export const WalletContextProvider = ({children}: { children: ReactNode }) => {
             .then(r => {
                 toast({
                     title: "Refilled",
-                    description: "Your wallet has been refilled with 0.001 ETH",
+                    description: <p>Your wallet has been refilled with 0.001 ETH. <br /><small>Please wait a few seconds for the transaction to be confirmed.</small></p>,
                 })
 
                 return r.data
