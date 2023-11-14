@@ -3,9 +3,8 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "demo-frontend:dev:docker": "nx serve demo-frontend --host=0.0.0.0",
-    "demo-frontend2:dev:docker": "nx serve demo-frontend2 --host=0.0.0.0",
-    "demo-backend:dev:docker": "nx serve demo-backend --host=0.0.0.0"
+    "demo-frontend2:dev:docker": "nx serve demo-frontend2 --configuration=production --host=0.0.0.0",
+    "demo-backend:dev:docker": "nx serve demo-backend --configuration=production --host=0.0.0.0"
   },
   "private": true,
   "overrides": {

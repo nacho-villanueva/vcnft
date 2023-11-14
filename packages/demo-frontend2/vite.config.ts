@@ -3,12 +3,18 @@ import react from '@vitejs/plugin-react';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import path from "path"
 
+import fs from "fs"
+
 export default defineConfig({
   cacheDir: '../../node_modules/.vite/demo-frontend2',
 
   server: {
     port: 4200,
     host: 'localhost',
+//    https: {
+//	key: fs.readFileSync("./ssl/key.pem"),
+//	cert: fs.readFileSync("./ssl/cert.pem"),
+//	}
   },
 
   preview: {
