@@ -18,6 +18,11 @@ const Home = () => {
             </div>
 
             <div className={styles.cardList}>
+
+              <div className={"bg-yellow-500 p-4 rounded font-bold max-w-[600px] w-full text-sm"}>
+                IMPORTANT: Currently only Goerli testnet is supported. Please switch your wallet to Goerli testnet.
+              </div>
+
                 <CardItem
                     href={"/wallet"}
                     title={"Wallet"}

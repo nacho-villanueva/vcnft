@@ -171,13 +171,19 @@ export const WalletContextProvider = ({children}: { children: ReactNode }) => {
   }
 
   async function updateBalance(addr: string) {
-    let b = await provider.getBalance(addr);
-    setBalance(v => {
-      // console.log("balance", addr, b)
-      if (v !== b) setBalanceUpdated(false)
-      return b
-    })
-    return b;
+    try {
+      let b = await provider.getBalance(addr);
+      setBalance(v => {
+        // console.log("balance", addr, b)
+        if (v !== b) setBalanceUpdated(false)
+        return b
+      })
+      return b;
+    }
+    catch (e) {
+      console.error("Failed to update balance", e)
+      return BigInt(0)
+    }
   }
 
   async function loadPendingCredentials() {
@@ -243,7 +249,14 @@ export const WalletContextProvider = ({children}: { children: ReactNode }) => {
 
           setSetup({state: "SETUP", error: null, message: "Fetching network..."})
 
-          const network = await provider.getNetwork();
+          let network = await provider.getNetwork();
+
+          if (network.chainId !== BigInt(5)) {
+            await provider.send("wallet_switchEthereumChain", [{chainId: "0x5"}])
+            window.location.reload()
+            return;
+          }
+
           setNetwork(network);
 
           if (!acc || !network) {
