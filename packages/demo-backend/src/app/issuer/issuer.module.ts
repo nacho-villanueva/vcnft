@@ -16,6 +16,7 @@ import {TransferSessionModule} from "../transfer-session/transfer-session.module
   ],
   controllers: [IssuerController],
   providers: [IssuerService],
+  exports: [IssuerService]
 })
 export class IssuerModule {}
 

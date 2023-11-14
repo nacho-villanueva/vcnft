@@ -6,6 +6,7 @@ import {Issuer as IssuerModel} from "../issuer/issue.schema";
 import * as process from "process";
 import {getResolver as getEthrResolver} from "ethr-did-resolver";
 import {getResolver as getTBDResolver} from "@vcnft/tbd";
+import {getResolver as getNFTResolver} from "@vcnft/core";
 import {Resolver} from "did-resolver";
 
 @Injectable()
@@ -15,6 +16,7 @@ export class VcnftService {
 
   constructor() {
     this.resolver = new Resolver({
+      ...getNFTResolver({blockchainProvider: this.getBlockchainProvider()}),
       ...getTBDResolver(this.getSSIProvider()),
       ...getEthrResolver({
         networks: [

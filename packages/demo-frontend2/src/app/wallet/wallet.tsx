@@ -1,4 +1,4 @@
-import {Card, CardContent, CardDescription, CardTitle} from "@/components/ui/card";
+import {Card, CardContent, CardDescription, CardFooter, CardTitle} from "@/components/ui/card";
 import ConnectWalletButton from "@/app/wallet/connect-button";
 import {cn, getCoinbaseLink, truncateAddress, truncateDid} from "@/utils/utils";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
@@ -131,7 +131,7 @@ const WalletMain = () => {
                                 <br/>
                                 <Button variant={"outline"} className={"w-full"} onClick={handleImportVCNFTClick}>Import
                                     VCNFT</Button>
-                                <Button variant={"outline"} className={"w-full"}>Export Wallet</Button>
+                                {/*<Button variant={"outline"} className={"w-full"}>Export Wallet</Button>*/}
                                 <TransferDialog/>
                             </div>}
                         </CardContent></>}
@@ -172,11 +172,13 @@ const WalletMain = () => {
 
                 </Card>
 
-                <CredentialsList
+              <PendingCredentialsList credentials={attributes.pendingCredentials}/>
+              <CredentialsList
                     credentials={attributes.activeCredentials}
                     onUnloadCredential={functions.handleUnloadCredential}
                     onVerifyCredential={functions.handleVerifyCredential}
                 />
+
 
                 <input type={"file"} hidden ref={inputFileRef} onInput={functions.handleImportVCNFT}/>
             </div>
@@ -210,6 +212,38 @@ const CredentialsList = ({credentials, onUnloadCredential, onVerifyCredential}: 
             </div>
         </div>
     </div>
+}
+
+const PendingCredentialsList = ({credentials}: { credentials: any[] }) => {
+    return (credentials.length > 0 ? <div className={"flex flex-col items-start w-full mt-4"}>
+      <div className={"flex items-center gap-1"}>
+        <h1 className={"underline font-bold"}>{credentials.length > 0 && "Pending Credentials"}</h1>
+        <small>(Refresh to update)</small>
+      </div>
+        <div className={"w-full overflow-y-auto "}>
+            <div className={"flex flex-nowrap gap-4 w-fit"}>
+                {
+                    credentials.map((cred, i) => (
+                      <Card className={"max-w-[500px] min-w-min w-full p-2"} key={i}>
+                        <CardContent className={"p-4 flex flex-col justify-center w-full"}>
+                          <p className={"whitespace-nowrap"}><b>Issuer:</b> {truncateDid(cred.issuer)}</p>
+                          <p className={"whitespace-nowrap"}><b>Credential ID:</b> {cred.id.slice(0, 4)} ... {cred.id.slice(-4)}</p>
+                          <div className={"mt-2"}><b><u>Claims:</u></b>
+                            <ul className={"list"}>
+                              {Object.keys(cred.claims).map((key) => (
+                                <li key={key}
+                                    className={"capitalize"}>{key}: {cred.claims[key]}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        </CardContent>
+                      </Card>
+                        )
+                    )
+                }
+            </div>
+        </div>
+    </div> : <></>)
 }
 
 export default WalletMain;

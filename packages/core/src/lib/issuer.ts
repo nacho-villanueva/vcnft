@@ -39,8 +39,10 @@ export class Issuer {
     );
 
     if (resolved.status === AssetStatus.RESOLVED) {
-      if (!resolved.assetIds || resolved.assetIds.length === 0)
+      if (!resolved.assetIds || resolved.assetIds.length === 0) {
+        console.log(resolved);
         throw new Error('Invalid transaction hash');
+      }
 
       const assetId = resolved.assetIds[index];
       const did = toNftDid(assetId);

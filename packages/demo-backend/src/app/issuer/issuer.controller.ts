@@ -128,11 +128,6 @@ export class IssuerController {
         schema: {
             type: "object",
             properties: {
-                to: {
-                    type: "string",
-                    example: "0x1234",
-                    description: "The address to send the VCNFT to"
-                },
                 claims: {
                     type: "object",
                     example: {"Make": "Ferrari", "Model": "Enzo"},
@@ -143,8 +138,32 @@ export class IssuerController {
     })
     @HttpCode(200)
     @Post("/:name/issue/vcnft")
-    async issueVcNft(@Param("name") name: string, @Body("to") to: string, @Body("claims") claims: Record<string, any>) {
-        return await this.issuerService.issueVcNft(name, to, claims);
+    async issueVcNft(@Param("name") name: string,
+                     @Body("claims") claims: Record<string, any>,
+                     @Body("subject") subject?: string
+    ) {
+      if (subject)
+        return await this.issuerService.issueVcNft(name, claims, subject);
+
+      return await this.issuerService.issueVcNftRequest(name, claims);
+    }
+
+    @ApiProperty({description: "Claim a VCNFT"})
+    @ApiBody({
+        schema: {
+            type: "object",
+            properties: {
+                to: {
+                    type: "string",
+                    example: "0x1234",
+                    description: "The address to send the VCNFT to"
+                },
+            }
+        }
+    })
+    @Post("/:name/issue/vcnft/:id/claim")
+    async claimVcNft(@Param("name") name: string, @Param("id") id: string, @Body("to") to: string) {
+        return await this.issuerService.claimVcNftRequest(id, to)
     }
 
     @ApiProperty({description: "Fetch Issued Credential"})

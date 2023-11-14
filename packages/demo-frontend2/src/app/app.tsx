@@ -8,6 +8,7 @@ import Manufacturer from "@/app/manufacturer";
 import {Toaster} from "@/components/ui/toaster";
 import Wallet from "@/app/wallet";
 import {Verifier} from "@/app/verifier";
+import {Registry} from "@/app/registry";
 
 export function App() {
     return (
@@ -17,6 +18,7 @@ export function App() {
                 <Route path="/manufacturer/*" element={<Manufacturer/>}/>
                 <Route path="/wallet/*" element={<Wallet/>}/>
                 <Route path="/verifier/*" element={<Verifier/>}/>
+                <Route path="/registry/*" element={<Registry/>}/>
             </Routes>
             <Toaster/>
         </div>
