@@ -19,7 +19,7 @@ const Home = () => {
 
             <div className={styles.cardList}>
 
-              <div className={"bg-yellow-500 p-4 rounded font-bold max-w-[600px] w-full text-sm"}>
+              <div className={styles.disclaimer}>
                 IMPORTANT: Currently only Goerli testnet is supported. Please switch your wallet to Goerli testnet.
               </div>
 
