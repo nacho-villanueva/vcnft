@@ -17,6 +17,16 @@
     gap: 1rem;
 }
 
+.disclaimer {
+  background: #d9b41e;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  max-width: 600px;
+  width: 100%;
+  font-size: 0.875rem;
+}
+
 .card {
     position: relative;
     width: 100%;
