@@ -17,6 +17,7 @@ import WalletVerify from "@/app/wallet/requests/verify";
 import {WalletContextProvider} from "@/utils/vcnft";
 import WalletMain from "@/app/wallet/wallet";
 import {TransferAction} from "@/app/wallet/requests/transfer-action";
+import {ClaimVCNFTRequest} from "@/app/wallet/requests/claim";
 
 type WalletContextType = {
     account: JsonRpcSigner | null,
@@ -43,6 +44,7 @@ function Wallet() {
             <Routes>
                 <Route path={"verify/:id"} element={<WalletVerify />}/>
                 <Route path={"transfer/:address"} element={<TransferAction />}/>
+                <Route path={"claim/:id"} element={<ClaimVCNFTRequest />}/>
             </Routes>
         </ WalletContextProvider>
     );

@@ -7,3 +7,4 @@ export * from './lib/utils';
 export * from './common/document-loader'
 export * from './common/blockchain';
 export * from './lib/verifier'
+export * from './nft-did-resolver/resolver'

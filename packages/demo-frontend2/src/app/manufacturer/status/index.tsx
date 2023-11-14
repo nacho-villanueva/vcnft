@@ -17,7 +17,7 @@ export type IssuedCredential = {
   issuerDID: string,
   issuerName: string,
   issuedAt: Date,
-  claims: Record<string, any>
+  claims: string,
   nftDidCreation: string,
   forAddress: string,
   status?: string,
@@ -25,8 +25,25 @@ export type IssuedCredential = {
 
 export const columns: ColumnDef<IssuedCredential>[] = [
   {
+    accessorKey: "status",
+    header: "Status",
+    cell: (row ) => {
+      switch (row.renderValue()) {
+        case "ISSUED":
+          return <span className={"text-green-500"}>Issued</span>
+        case "CLAIMED":
+          return <span className={"text-blue-500"}>Claimed</span>
+        case "PENDING":
+          return <span className={"text-yellow-500"}>Pending</span>
+        case "FAILED":
+          return <span className={"text-red-500"}>Failed</span>
+      }
+    }
+  },
+  {
     accessorKey: "_id",
     header: "Credential ID",
+    accessorFn: (row) => row._id.slice(0, 4) + " ... " + row._id.slice(-4),
   },
   {
     accessorKey: "issuerDID",
@@ -34,13 +51,23 @@ export const columns: ColumnDef<IssuedCredential>[] = [
     accessorFn: (row) => (row.issuerDID.slice(0, 15) + " ... " + row.issuerDID.slice(-4)),
   },
   {
-    accessorKey: "forAddress",
-    header: "For",
-    accessorFn: (row) => (row.forAddress.slice(0, 6) + " ... " + row.forAddress.slice(-4)),
-  },
-  {
     header: "Issue Date",
     accessorFn: (row) => moment(row.issuedAt).format("MMM DD YYYY"),
+  },
+  {
+    accessorKey: "claims",
+    header: "Claims",
+    cell: (row) => {
+      const c = Object.entries(JSON.parse(row.getValue() as string ?? "{}"))
+      return <pre className={"text-xs"}>
+        {c.map(([key, value]) => (
+          <div key={key}>
+            <span className={"capitalize"}>{key}:</span>&nbsp;
+            <b>{!!value && JSON.stringify(value)}</b></div>
+        ))}
+      </pre>
+    },
+    // accessorFn: (row) => Object.entries(JSON.parse(row.claims)).map(a => a.join(": ")).join("\n"),
   }
 ]
 
@@ -125,9 +152,10 @@ export function DataTable<TData, TValue>({columns, data, loading, onRowClick}: D
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
                 onClick={() => onRowClick(i)}
+                className={"cursor-pointer"}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell key={cell.id} style={{whiteSpace: "pre-wrap"}}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

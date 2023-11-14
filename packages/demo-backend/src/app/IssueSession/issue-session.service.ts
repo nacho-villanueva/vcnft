@@ -27,4 +27,16 @@ export class IssueSessionService {
   async findAllByIssuer(issuerName: string): Promise<IssueSession[]> {
     return this.issueSessionModel.find({issuerName: issuerName}).exec();
   }
+
+  async claim(id: string ,address: string, tx: string): Promise<boolean> {
+    return this.issueSessionModel.updateOne({_id: id}, {status: "CLAIMED",
+      forAddress: address,
+      nftDidCreation: tx})
+      .exec().then((res) => res.acknowledged);
+  }
+
+  async issue(id: string, credential: string): Promise<boolean> {
+    return this.issueSessionModel.updateOne({_id: id}, {status: "ISSUED", issuedCredential: credential})
+      .exec().then((res) => res.acknowledged);
+  }
 }

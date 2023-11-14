@@ -10,15 +10,13 @@ import {Input} from "@/components/ui/input"
 import {toast} from "@/components/ui/use-toast"
 import {zodResolver} from "@hookform/resolvers/zod";
 import {MinusIcon, PlusIcon} from "@radix-ui/react-icons";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {AiFillCaretLeft} from "react-icons/ai";
 import {apiInstance} from "@/utils/Axios";
 import {ISSUER_NAME} from "@/app/manufacturer";
+import {generateRandomVIN} from "@/utils/utils";
 
 const FormSchema = z.object({
-  forAddress: z.string()
-    .startsWith("0x", {message: "Blockchain address must start with 0x"})
-    .refine((v) => isAddress(v), {message: "Invalid blockchain address"}),
   claims: z.array(z.object({
     type: z.string(),
     value: z.string(),
@@ -26,27 +24,29 @@ const FormSchema = z.object({
 })
 
 function ManufacturerIssue() {
+  const navigate = useNavigate()
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      forAddress: "",
-      claims: [{type: "", value: ""}, {type: "", value: ""}, {type: "", value: ""}],
+      claims: [
+        {type: "make", value: "ferrari"},
+        {type: "model", value: ""},
+        {type: "year", value: ""},
+        {type: "vin", value: generateRandomVIN()}],
     },
   })
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
     apiInstance.post(`/issuer/${ISSUER_NAME}/issue/vcnft`, {
-      to: data.forAddress,
       claims: Object.fromEntries(data.claims.map(claim => [claim.type, claim.value]))
     })
       .then(r => {
         toast({
-          title: "Credential Issued",
+          title: "Credential Request Issued",
           description: (
             <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 text-white">
               <div>
-                <span className={"max-w-full"}>For: <b
-                  className={"w-2 truncate"}>{data.forAddress.slice(0, 5)}...{data.forAddress.slice(-4, data.forAddress.length)}</b></span>
                 <p>Claims:</p>
                 <ul className={"list-disc px-4 text-sm"}>
                 {data.claims.map((claim, index) => (
@@ -59,6 +59,8 @@ function ManufacturerIssue() {
             </pre>
           ),
         })
+
+        navigate("/manufacturer/status/" + r.data._id)
       }).catch(err => {
         toast({
           title: "Error Issuing Credential",
@@ -76,23 +78,6 @@ function ManufacturerIssue() {
       </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="p-4 space-y-6">
-          <FormField
-            control={form.control}
-            name="forAddress"
-            render={({field}) => (
-              <FormItem>
-                <FormLabel>For Address</FormLabel>
-                <FormControl>
-                  <Input placeholder="0x00000000000000000000000000" {...field} />
-                </FormControl>
-                <FormDescription className={"text-xs"}>
-                  This is blockchain address of who is receiving the credential.
-                </FormDescription>
-                <FormMessage/>
-              </FormItem>
-            )}
-          />
-
           <FormField
             control={form.control}
             name={"claims"}

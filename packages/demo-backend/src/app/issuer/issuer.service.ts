@@ -2,7 +2,7 @@ import {ConflictException, Inject, Injectable, InternalServerErrorException, Not
 import {InjectModel} from "@nestjs/mongoose";
 import {Model} from "mongoose";
 import {Issuer as IssuerModel} from "./issue.schema";
-import {Issuer, NftDidCreation, NftDidResolution} from "@vcnft/core";
+import {Issuer, NftDidCreation, NftDidResolution, parseNftDid} from "@vcnft/core";
 import {VcnftService} from "../vcnft/vcnft.service";
 import {KeyType} from "@vcnft/tbd";
 import {AssetType, ChainId} from "caip";
@@ -90,14 +90,51 @@ export class IssuerService {
     return didDocument['id'];
   }
 
-  async issueVcNft(name: string, to: string, claims: Record<string, any>) {
+  async issueVcNft(name: string, claims: Record<string, any>, subjectDid: string) {
+    const i = await this.getIssuer(name);
+    if (!i) throw new NotFoundException("Issuer not found");
+    const issuer = await this.getVcnftIssuer(i);
+
+    const issuerDid = i.did;
+    const issuerDidDoc = await this.vcnftService.getSSIProvider().resolveDid(issuerDid)
+    const verificationMethod = issuerDidDoc["authentication"][0];
+
+    return await issuer.issueVcNft(
+      subjectDid,
+      i.did,
+      claims,
+      verificationMethod,
+    );
+  }
+
+  async issueVcNftRequest(name: string, claims: Record<string, any>) {
     const i = await this.getIssuer(name);
 
     if (!i.did) throw new NotFoundException("Issuer has no DID. Please generate one first.");
+
+    const chain = (i.defaultChain || "eip155:5")
+
+    return await this.issueSessionService.create({
+      issuerName: i.name,
+      issuerDID: i.did,
+      chainId: chain,
+      claims: JSON.stringify(claims),
+      status: "PENDING",
+      issuedAt: new Date()
+    });
+  }
+
+  async claimVcNftRequest(credentialId: string, to: string) {
+    const credentialRequest = await this.issueSessionService.getIssueSession(credentialId);
+
+    if (!credentialRequest) throw new NotFoundException("Credential request not found");
+    if (credentialRequest.status !== "PENDING") throw new ConflictException("Credential can not be claimed");
+
+    const i = await this.getIssuer(credentialRequest.issuerName);
+    if (!i.did) throw new NotFoundException("Issuer has no DID");
     const issuer = await this.getVcnftIssuer(i);
 
-    const did = i.did;
-    const chain = (i.defaultChain || "eip155:5").split(":");
+    const chain = (credentialRequest.chainId || "eip155:5").split(":");
     const chainId = new ChainId({namespace: chain[0], reference: chain[1]});
 
     const nftDidCreation = await issuer.issueNftDid(new AssetType({
@@ -105,21 +142,41 @@ export class IssuerService {
       assetName: {namespace: "erc721", reference: this.vcnftService.getChainContract(chainId)}
     }), to);
 
-    return await this.issueSessionService.create({
-      issuerName: i.name,
-      issuerDID: did,
-      nftDidCreation: nftDidCreation.assetType.toString() + "@" + nftDidCreation.txHash,
-      claims: JSON.stringify(claims),
-      issuedAt: new Date(),
-      forAddress: to
-    });
+    return this.issueSessionService.claim(credentialId,
+      to,
+      nftDidCreation.assetType.toString() + "@" + nftDidCreation.txHash);
   }
 
   async getIssuedCredential(id: string) {
     const issue = await this.issueSessionService.getIssueSession(id);
-    if (!issue) throw new NotFoundException("Issue session not found");
-    const i = await this.getVcnftIssuerFromName(issue.issuerName);
 
+    if (!issue) throw new NotFoundException("Issue session not found");
+    if (issue.status === "FAILED") {
+      return {
+        status: "FAILED",
+        issueParams: issue,
+        credential: null
+      }
+    }
+
+    if (issue.status === "PENDING") {
+      return {
+        status: "PENDING",
+        issueParams: issue,
+        credential: null
+      }
+    }
+
+    if (issue.status === "ISSUED") {
+      return {
+        status: "ISSUED",
+        issueParams: issue,
+        credential: issue.issuedCredential
+      }
+    }
+
+    const i = await this.getVcnftIssuerFromName(issue.issuerName);
+    if (!i) throw new NotFoundException("Issuer not found");
 
     const split = issue.nftDidCreation.split("@");
     const assetSplit = split[0].split("/");
@@ -143,7 +200,7 @@ export class IssuerService {
 
     if (resolution.status !== "RESOLVED")
       return {
-        status: "PENDING",
+        status: "CLAIMED",
         issueParams: issue,
         credential: null
       };
@@ -154,10 +211,14 @@ export class IssuerService {
 
     const claims = JSON.parse(issue.claims);
 
+    const credential = await i.issueVcNft(resolution.did, issue.issuerDID, claims, verificationMethod);
+
+    this.issueSessionService.issue(id, JSON.stringify(credential));
+
     return {
       status: "ISSUED",
       issueParams: issue,
-      credential: await i.issueVcNft(resolution.did, issue.issuerDID, claims, verificationMethod)
+      credential: credential
     };
   }
 }

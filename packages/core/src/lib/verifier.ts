@@ -67,6 +67,24 @@ export class Verifier {
         return await this.verifyNftDidOwnership(sub, accountId, ownershipProof)
     }
 
+    async getAddressFromPresentation(presentation: VerifiedPresentation) : Promise<AccountId | null> {
+        if (!presentation.verified) return null
+      if (!presentation.payload.sub
+        || !presentation.payload.iss
+        || !presentation.payload["ownershipProof"])
+        return null
+
+      const iss = presentation.payload.iss
+      const sub = presentation.payload.sub
+      const ownershipProof = presentation.payload["ownershipProof"]
+
+      const message = generateOwnershipProofMessage(iss, sub)
+      const signer = this.bp.getAddressFromSignature(message, ownershipProof)
+
+      const parsedDid = parseNftDid(sub)
+      return new AccountId({chainId: parsedDid.chainId, address: signer})
+    }
+
     async verifyVcnftPresentationJwt(presentationJwt: string, resolver: Resolver) : Promise<VerificationResult> {
         let verifiedPresentation: VerifiedPresentation | null = await verifyPresentation(presentationJwt, resolver)
             .catch((e) => {

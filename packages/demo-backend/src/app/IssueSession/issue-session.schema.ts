@@ -14,16 +14,28 @@ export class IssueSession {
   issuerName: string;
 
   @Prop()
+  status: "PENDING" | "CLAIMED" | "CONFIRMING" | "ISSUED" | "FAILED";
+
+  @Prop()
   issuerDID: string;
 
   @Prop()
-  forAddress: string;
+  forAddress?: string;
 
   @Prop()
-  nftDidCreation: string;
+  nftDidCreation?: string;
 
   @Prop()
   claims: string;
+
+  @Prop()
+  issuedCredential?: string;
+
+  @Prop()
+  chainId?: string;
+
+  @Prop({default: false})
+  requiresConfirmation?: boolean;
 }
 
 export const IssueSessionSchema = SchemaFactory.createForClass(IssueSession);

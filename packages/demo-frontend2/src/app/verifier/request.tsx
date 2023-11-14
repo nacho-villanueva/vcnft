@@ -26,7 +26,9 @@ export const RequestVerification = () => {
         resolver: zodResolver(FormSchema),
         defaultValues: {
             claims: [
-                {id: '1', value: "numberplate"},
+                {id: '1', value: "licensePlate"},
+                {id: '2', value: "make"},
+                {id: '3', value: "model"},
             ],
         }
     })
