@@ -37,9 +37,6 @@ export const WalletContext = createContext<WalletContextType>({
 
 
 function Wallet() {
-
-  throw new Error("This is a test error");
-
     return (
         <WalletContextProvider>
             <WalletMain />
