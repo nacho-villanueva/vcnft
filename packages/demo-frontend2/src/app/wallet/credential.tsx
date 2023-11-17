@@ -30,12 +30,23 @@ const CredentialCard = ({credential, onCredentialUnload, onVerifyCredential}: Cr
             .finally(() => setVerifying(false))
     }
 
+    if (!credential.payload) {
+      return <Card className={"max-w-[500px] min-w-min w-full p-2"}>
+        <CardContent className={"p-4 flex flex-col justify-center w-full"}>
+          <p className={"whitespace-nowrap"}>Invalid Credential</p>
+        </CardContent>
+        <CardFooter className={"flex flex-wrap justify-between gap-2 w-full px-1 pb-2"}>
+          <Button className={"flex-1"} variant={"outline"} onClick={() => onCredentialUnload?.(credential)}>Unload Credential</Button>
+        </CardFooter>
+      </Card>
+    }
+
     return (
         <Card className={"max-w-[500px] min-w-min w-full p-2"}>
             <CardContent className={"p-4 flex flex-col justify-center w-full"}>
                 <p className={"whitespace-nowrap"}><b>Issuer:</b> {truncateDid(issuer)}</p>
                 <p className={"whitespace-nowrap"}>
-                    <b>Subject:</b> {truncateDid(credential.payload.credentialSubject.id)}</p>
+                    <b>Subject:</b> {truncateDid(credential.payload?.credentialSubject.id)}</p>
                 <p className={"whitespace-nowrap"}><b>Issued At:</b> {credential.payload.issuanceDate}</p>
                 <p className={"whitespace-nowrap"}><b>Verified:</b> {verifying ?
                     <LoadingSpinner/> :
