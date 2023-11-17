@@ -120,15 +120,15 @@ export const TransferAction = () => {
                     </Select>
                     {!!subject && !isSubjectOnChain && <span className={"text-red-500"}>This asset is not on the same chain as requested. Please choose another asset in the same chain or ask for a new request on this chain.</span>}
                     <div className={"flex flex-wrap gap-8"}>
-                        {subjectClaims.map(([key, value]) => (
-                            <div className={"flex gap-1 items-center"}>
+                        {subjectClaims.map(([key, value], i) => (
+                            <div className={"flex gap-1 items-center"} key={i}>
                                 <label className={"capitalize text-sm"}>{key}: </label>
                                 <span className={"font-semibold"}>{value}</span>
                             </div>
                         ))}
                     </div>
                 <div className="flex items-center space-x-2">
-                    <Checkbox id="terms2" checked={removeOnTrasnfer} onCheckedChange={(state) => setRemoveOnTransfer(!!state.valueOf)}/>
+                    <Checkbox id="terms2" checked={removeOnTrasnfer} onCheckedChange={(state) => setRemoveOnTransfer(!!state)}/>
                     <label
                         htmlFor="terms2"
                         className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
