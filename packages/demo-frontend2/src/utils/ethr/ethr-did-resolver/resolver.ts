@@ -148,7 +148,7 @@ export class EthrDidResolver {
     const pks: Record<string, VerificationMethod> = {}
     const services: Record<string, Service> = {}
     for (const event of history) {
-      if (blockHeight !== -1 && event.blockNumber > blockHeight) {
+      if (blockHeight !== -1 && event.blockNumber > (blockHeight as number)) {
         if (nextVersionId > event.blockNumber) {
           nextVersionId = event.blockNumber
         }

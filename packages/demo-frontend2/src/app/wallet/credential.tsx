@@ -15,7 +15,7 @@ type CredentialCardProps = {
 }
 
 const CredentialCard = ({credential, onCredentialUnload, onVerifyCredential}: CredentialCardProps) => {
-    const issuer = typeof credential.payload.issuer === "string" ? credential.payload.issuer : credential.payload.issuer.id;
+    const issuer = typeof credential.payload.issuer === "string" ? credential.payload?.issuer : credential.payload?.issuer?.id;
 
     const [verified, setVerified] = useState<{
         verified: boolean,
