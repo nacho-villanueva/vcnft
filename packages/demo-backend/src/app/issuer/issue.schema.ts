@@ -15,7 +15,7 @@ export class Issuer {
   name: string;
 
   @Prop({
-    default: "eip155:5"
+    default: "eip155:11155111"
   })
   defaultChain: string;
 

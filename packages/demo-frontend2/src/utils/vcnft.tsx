@@ -251,7 +251,7 @@ export const WalletContextProvider = ({children}: { children: ReactNode }) => {
 
           let network = await provider.getNetwork();
 
-          if (network.chainId !== BigInt(5)) {
+          if (network.chainId !== BigInt(11155111)) {
             await provider.send("wallet_switchEthereumChain", [{chainId: "0x5"}])
             window.location.reload()
             return;

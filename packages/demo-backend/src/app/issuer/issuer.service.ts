@@ -112,7 +112,7 @@ export class IssuerService {
 
     if (!i.did) throw new NotFoundException("Issuer has no DID. Please generate one first.");
 
-    const chain = (i.defaultChain || "eip155:5")
+    const chain = (i.defaultChain || "eip155:11155111")
 
     return await this.issueSessionService.create({
       issuerName: i.name,
@@ -134,7 +134,7 @@ export class IssuerService {
     if (!i.did) throw new NotFoundException("Issuer has no DID");
     const issuer = await this.getVcnftIssuer(i);
 
-    const chain = (credentialRequest.chainId || "eip155:5").split(":");
+    const chain = (credentialRequest.chainId || "eip155:11155111").split(":");
     const chainId = new ChainId({namespace: chain[0], reference: chain[1]});
 
     const nftDidCreation = await issuer.issueNftDid(new AssetType({

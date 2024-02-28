@@ -112,7 +112,7 @@ export class IssuerController {
             type: "object",
             properties: {
                 chainId: {
-                    type: "string", example: "eip155:5"
+                    type: "string", example: "eip155:11155111"
                 }
             }
         }

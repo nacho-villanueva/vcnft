@@ -13,7 +13,8 @@ describe('NFT DID Resolver', () => {
       setSigner: jest.fn(),
       getNFTOwners: jest.fn(),
       mintNFT: jest.fn(),
-      getProviderJsonRpcUrl: jest.fn()
+      getProviderJsonRpcUrl: jest.fn(),
+      getAddressFromSignature: jest.fn(),
     };
 
     // Mock the getNFTOwners method

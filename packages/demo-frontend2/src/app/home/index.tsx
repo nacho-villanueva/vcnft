@@ -20,7 +20,7 @@ const Home = () => {
             <div className={styles.cardList}>
 
               <div className={styles.disclaimer}>
-                IMPORTANT: Currently only Goerli testnet is supported. Please switch your wallet to Goerli testnet.
+                IMPORTANT: Currently only Sepolia testnet is supported. Please switch your wallet to Sepolia testnet.
               </div>
 
                 <CardItem
