@@ -24,6 +24,7 @@ export class VcnftService {
           {name: "0x5", rpcUrl: process.env["INFURA_ETH_GOERLI"]},
           {name: "0x137", rpcUrl: process.env["INFURA_MATIC_MAINNET"]},
           {name: "0x80001", rpcUrl: process.env["INFURA_MATIC_MUMBAI"]},
+          {chainId: 11155111, rpcUrl: process.env["INFURA_ETH_SEPOLIA"], registry: process.env["ETHR_CONTRACT_SEPOLIA"]},
         ]
       }),
     }, {
@@ -42,6 +43,10 @@ export class VcnftService {
           return process.env["NFT_CONTRACT_MATIC"];
         case "80001":
           return process.env["NFT_CONTRACT_MUMBAI"];
+        case "11155111":
+          return process.env["NFT_CONTRACT_SEPOLIA"];
+        default:
+          throw new Error(`Chain not supported ${chainId.reference}`);
       }
     }
   }
@@ -63,6 +68,10 @@ export class VcnftService {
       {
         chainId: new ChainId({namespace: "eip155", reference: "80001"}),
         jsonRpcUrl: process.env["INFURA_MATIC_MUMBAI"]
+      },
+      {
+        chainId: new ChainId({namespace: "eip155", reference: "11155111"}),
+        jsonRpcUrl: process.env["INFURA_ETH_SEPOLIA"]
       }
     ]);
   }
@@ -95,7 +104,10 @@ export class VcnftService {
   }
 
   async getFaucetBalance(chainId: string) {
-    return this.getBlockchainProvider().getBalance(
+    const bp = this.getBlockchainProvider()
+    bp.setSigner(process.env["SIGNER_DEFAULT"])
+
+    return bp.getBalance(
       new ChainId({namespace: "eip155", reference: chainId})
     )
   }

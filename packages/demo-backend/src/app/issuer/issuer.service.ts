@@ -14,6 +14,8 @@ export class IssuerService {
 
   private issuer: Issuer;
 
+  private DEFAULT_CHAIN = process.env.DEAFULT_CHAIN || "eip155:11155111";
+
 
   constructor(
     @InjectModel(IssuerModel.name) private issuerModel: Model<IssuerModel>,
@@ -112,7 +114,7 @@ export class IssuerService {
 
     if (!i.did) throw new NotFoundException("Issuer has no DID. Please generate one first.");
 
-    const chain = (i.defaultChain || "eip155:5")
+    const chain = (i.defaultChain || this.DEFAULT_CHAIN)
 
     return await this.issueSessionService.create({
       issuerName: i.name,
@@ -125,6 +127,7 @@ export class IssuerService {
   }
 
   async claimVcNftRequest(credentialId: string, to: string) {
+    console.log("Claiming credential", credentialId, to)
     const credentialRequest = await this.issueSessionService.getIssueSession(credentialId);
 
     if (!credentialRequest) throw new NotFoundException("Credential request not found");
@@ -134,8 +137,10 @@ export class IssuerService {
     if (!i.did) throw new NotFoundException("Issuer has no DID");
     const issuer = await this.getVcnftIssuer(i);
 
-    const chain = (credentialRequest.chainId || "eip155:5").split(":");
+    const chain = (credentialRequest.chainId || this.DEFAULT_CHAIN).split(":");
     const chainId = new ChainId({namespace: chain[0], reference: chain[1]});
+
+    console.log("Chain ID", chainId.toString());
 
     const nftDidCreation = await issuer.issueNftDid(new AssetType({
       chainId: chainId,

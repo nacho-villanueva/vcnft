@@ -156,9 +156,8 @@ export class EthersBlockchainProvider implements BlockchainProvider {
   }
 
   async getBalance(chainId: ChainId): Promise<string> {
-    const provider = EthersBlockchainProvider.getProvider(chainId);
-    const signer = await provider.getSigner();
-    return provider.getBalance(signer.address).then((balance) => balance.toString());
+    const signer = await this.getSigner(chainId);
+    return signer.provider.getBalance(signer.address).then((balance) => balance.toString());
   }
 
   async faucet(chainId: ChainId, address: string): Promise<string | TransactionResponse> {
