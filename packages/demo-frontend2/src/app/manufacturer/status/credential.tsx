@@ -19,6 +19,8 @@ import {
   DialogTrigger
 } from "@/components/ui/dialog";
 import QRCode from "react-qr-code";
+import {Input} from "@/components/ui/input";
+import {CopyIcon} from "@radix-ui/react-icons";
 
 const Credential = ({issuer}: { issuer: string }) => {
   const [data, setData] = useState<Record<any, any>>({});
@@ -65,24 +67,24 @@ const Credential = ({issuer}: { issuer: string }) => {
     window.open(url, "_blank");
   }
 
-  // const handleSendToWallet = () => {
-  //   apiInstance.post(`/issuer/${issuer}/issue/vcnft/${id}/send`)
-  //     .then(r => {
-  //       toast({
-  //         title: "Sent to wallet",
-  //         description: "Refresh wallet to see new credential"
-  //       })
-  //     })
-  //     .catch(r => {
-  //       if (r.response.status === 500) {
-  //         toast({
-  //           variant: "destructive",
-  //           title: "Server Error",
-  //           description: "We are having trouble with this request. Please try refreshing later."
-  //         })
-  //       }
-  //     })
-  // }
+  const handleSendToWallet = () => {
+    apiInstance.post(`/issuer/${issuer}/issue/vcnft/${id}/send`)
+      .then(r => {
+        toast({
+          title: "Sent to wallet",
+          description: "Refresh wallet to see new credential"
+        })
+      })
+      .catch(r => {
+        if (r.response.status === 500) {
+          toast({
+            variant: "destructive",
+            title: "Server Error",
+            description: "We are having trouble with this request. Please try refreshing later."
+          })
+        }
+      })
+  }
 
   function getStatusText() {
     switch (data.status) {
@@ -155,7 +157,7 @@ const Credential = ({issuer}: { issuer: string }) => {
           {isIssued && (<>
             <Button variant={"ghost"} size={"sm"} disabled={!isIssued} onClick={handleCredentialExport}>
             Export Credential</Button>
-            <Button variant={"ghost"} size={"sm"} disabled={!isIssued}>Resend to Wallet</Button>
+            <Button variant={"ghost"} size={"sm"} disabled={!isIssued} onClick={handleSendToWallet}>Resend to Wallet</Button>
           </>)}
         </CardFooter>
       </Card>
@@ -193,6 +195,16 @@ const Attribute = ({label, value, pending}: { label: string, value: string, pend
 }
 
 const ClaimQRDialog = ({network, url}: {network: string, url: string}) => {
+  const inputRef = React.useRef<HTMLInputElement>(null)
+  const handleCopy = () => {
+    inputRef.current?.select();
+    inputRef.current?.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(url);
+    toast({
+      title: "Copied to clipboard"
+    })
+  }
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -217,6 +229,16 @@ const ClaimQRDialog = ({network, url}: {network: string, url: string}) => {
           value={url}
           viewBox={`0 0 256 256`}
         />
+
+        <div className={"flex flex-col"}>
+          <small>
+            Or share this link:
+          </small>
+          <div className={'flex items-center gap-2'}>
+            <Input className={"max-w-[80%] truncate border-none h-2 px-1"} readOnly value={url} ref={inputRef}/>
+            <Button size={"icon"} variant={"ghost"} onClick={handleCopy}><CopyIcon /></Button>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   )

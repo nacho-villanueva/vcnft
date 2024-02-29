@@ -197,6 +197,13 @@ type CredentialsListProps = {
 
 const CredentialsList = ({credentials, onUnloadCredential, onVerifyCredential}: CredentialsListProps) => {
     return <div className={"flex flex-col items-start w-full mt-4"}>
+      {credentials.map((cred) => {
+        return <div>
+          <code>
+            {JSON.stringify(cred)}
+          </code>
+        </div>
+      })}
         <h1 className={"underline font-bold"}>{credentials.length > 0 && "Credentials"}</h1>
         <div className={"w-full overflow-y-auto "}>
             <div className={"flex flex-nowrap gap-4 w-fit"}>
