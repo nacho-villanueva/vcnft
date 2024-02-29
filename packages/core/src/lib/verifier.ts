@@ -88,7 +88,9 @@ export class Verifier {
     async verifyVcnftPresentationJwt(presentationJwt: string, resolver: Resolver) : Promise<VerificationResult> {
         let verifiedPresentation: VerifiedPresentation | null = await verifyPresentation(presentationJwt, resolver)
             .catch((e) => {
-                return null})
+              console.error(e)
+              return null
+            })
 
         if (!verifiedPresentation || !verifiedPresentation.verified)
             return {

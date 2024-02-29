@@ -156,6 +156,7 @@ export class EthrDID {
       throw new Error('a web3 provider configuration is needed for network operations')
     }
     const owner = await this.lookupOwner()
+    console.log('owner', owner)
     const receipt = await this.controller.addDelegate(
       delegateOptions?.delegateType || DelegateTypes.veriKey,
       delegate,

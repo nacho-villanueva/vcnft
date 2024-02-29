@@ -1,7 +1,6 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
-import { Credential } from '../credentials/credential';
-import {DIDDocument} from "did-resolver";
+import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
+import {HydratedDocument} from 'mongoose';
+import * as process from "process";
 
 export type IssuerDocument = HydratedDocument<Issuer>;
 
@@ -15,7 +14,7 @@ export class Issuer {
   name: string;
 
   @Prop({
-    default: "eip155:11155111"
+    default: process.env.DEFAULT_CHAIN || "eip155:11155111"
   })
   defaultChain: string;
 

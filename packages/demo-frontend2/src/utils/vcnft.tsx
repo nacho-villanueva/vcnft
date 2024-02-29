@@ -148,7 +148,8 @@ export const WalletContextProvider = ({children}: { children: ReactNode }) => {
       identifier: account.address,
       chainNameOrId: network.chainId,
       provider: provider,
-      privateKey: del?.kp.privateKey
+      privateKey: del?.kp.privateKey,
+      registry: network.chainId === BigInt(11155111) ? "0x03d5003bf0e79C5F5223588F347ebA39AfbC3818" : undefined
     })
 
     if (!hasValidDelegate(account.address)) {
@@ -252,7 +253,7 @@ export const WalletContextProvider = ({children}: { children: ReactNode }) => {
           let network = await provider.getNetwork();
 
           if (network.chainId !== BigInt(11155111)) {
-            await provider.send("wallet_switchEthereumChain", [{chainId: "0x5"}])
+            await provider.send("wallet_switchEthereumChain", [{chainId: "0xaa36a7"}])
             window.location.reload()
             return;
           }
