@@ -4,6 +4,8 @@ import {Button} from "@/components/ui/button";
 import {JWTWithPayload, W3CCredential} from "@vcnft/core";
 import {useState} from "react";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import {CopyIcon, DownloadIcon, TrashIcon} from "@radix-ui/react-icons";
+import {CopyInput} from "@/components/ui/CopyInput";
 
 type CredentialCardProps = {
     credential: JWTWithPayload<W3CCredential>,
@@ -30,6 +32,17 @@ const CredentialCard = ({credential, onCredentialUnload, onVerifyCredential}: Cr
             .finally(() => setVerifying(false))
     }
 
+    const handleDownload = () => {
+        const blob = new Blob([JSON.stringify(credential, null, 2)], {type: "application/json"});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${issuer}-${credential.payload.issuanceDate}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        a.remove();
+    }
+
     if (!credential.payload) {
       return <Card className={"max-w-[500px] min-w-min w-full p-2"}>
         <CardContent className={"p-4 flex flex-col justify-center w-full"}>
@@ -44,9 +57,11 @@ const CredentialCard = ({credential, onCredentialUnload, onVerifyCredential}: Cr
     return (
         <Card className={"max-w-[500px] min-w-min w-full p-2"}>
             <CardContent className={"p-4 flex flex-col justify-center w-full"}>
-                <p className={"whitespace-nowrap"}><b>Issuer:</b> {truncateDid(issuer)}</p>
-                <p className={"whitespace-nowrap"}>
-                    <b>Subject:</b> {truncateDid(credential.payload?.credentialSubject.id)}</p>
+                <p className={"whitespace-nowrap flex items-center"}>
+                  <b>Issuer:</b> <CopyInput value={issuer}/>
+                </p>
+                <p className={"whitespace-nowrap flex items-center"}>
+                    <b>Subject:</b> <CopyInput value={credential.payload?.credentialSubject.id}/></p>
                 <p className={"whitespace-nowrap"}><b>Issued At:</b> {credential.payload.issuanceDate}</p>
                 <p className={"whitespace-nowrap"}><b>Verified:</b> {verifying ?
                     <LoadingSpinner/> :
@@ -65,9 +80,12 @@ const CredentialCard = ({credential, onCredentialUnload, onVerifyCredential}: Cr
                 </div>
             </CardContent>
             <CardFooter className={"flex flex-wrap justify-between gap-2 w-full px-1 pb-2"}>
-                <Button className={"flex-1"} variant={"outline"} disabled={verifying} onClick={handleVerifyCredential}>Verify Credential</Button>
-                <Button className={"flex-1"} variant={"outline"} onClick={() => onCredentialUnload?.(credential)}>Unload Credential</Button>
-            </CardFooter>
+                <Button variant={"outline"} disabled={verifying} onClick={handleVerifyCredential}>Verify Credential</Button>
+              <span className={"flex gap-2"}>
+                <Button variant={"outline"} size={"icon"} onClick={handleDownload}><DownloadIcon /></Button>
+                <Button variant={"outline"} className={"text-red-500 font-bold"} size={'icon'} onClick={() => onCredentialUnload?.(credential)}><TrashIcon /></Button>
+            </span>
+              </CardFooter>
         </Card>
     )
 }
