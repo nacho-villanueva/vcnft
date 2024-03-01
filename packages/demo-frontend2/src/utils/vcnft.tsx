@@ -267,6 +267,8 @@ export const WalletContextProvider = ({children}: { children: ReactNode }) => {
 
     const newCredentials = newTransferredCredentials.concat(Object.values(resolved))
 
+    console.log("newCredentials", newCredentials, newTransferredCredentials, resolved, transfers, credentials)
+
     if (newCredentials.length > 0) {
       credentials = newCredentials
         .filter((c: any) => !credentials.some((cred) => cred.jwt === c.jwt))

@@ -173,7 +173,7 @@ export class IssuerService {
       return {
         status: "ISSUED",
         issueParams: issue,
-        credential: issue.issuedCredential
+        credential: JSON.parse(issue.issuedCredential)
       }
     }
 

@@ -45,6 +45,9 @@ const CredentialCard = ({credential, onCredentialUnload, onVerifyCredential}: Cr
 
     if (!credential.payload) {
       return <Card className={"max-w-[500px] min-w-min w-full p-2"}>
+        <pre>
+          {credential.jwt}
+        </pre>
         <CardContent className={"p-4 flex flex-col justify-center w-full"}>
           <p className={"whitespace-nowrap"}>Invalid Credential</p>
         </CardContent>
