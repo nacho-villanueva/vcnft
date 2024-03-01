@@ -135,7 +135,7 @@ const WalletMain = () => {
                                 <TransferDialog/>
                             </div>}
                         </CardContent></>}
-                    {attributes.ethAvailable && isLoading &&
+                    { isLoading &&
                         <div className={"w-full min-h-[150px] flex items-center justify-center"}>
                             <LoadingSpinner size={12} color={"text-yellow-600"}/>
                             <p>

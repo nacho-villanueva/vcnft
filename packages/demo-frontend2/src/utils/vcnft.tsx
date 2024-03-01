@@ -188,8 +188,6 @@ export const WalletContextProvider = ({children}: { children: ReactNode }) => {
     if (hasValidDelegate(addr))
       del = await loadDelegate(addr)
 
-    console.log(addr, network.chainId, prov, del?.kp.privateKey, network.chainId === BigInt(11155111) ? "0x03d5003bf0e79C5F5223588F347ebA39AfbC3818" : undefined)
-
     let ethrDid = new EthrDID({
       identifier: addr,
       chainNameOrId: network.chainId,
@@ -316,9 +314,9 @@ export const WalletContextProvider = ({children}: { children: ReactNode }) => {
       let bal = await updateBalance(addr, currentProvider)
       if (bal <= BigInt(10000000000000)) {
         setSetup({state: "SETUP", error: null, message: "Balance too low. Requesting refill from faucet..."})
-        await faucet(acc.address, network.chainId.toString())
+        await faucet(addr, network.chainId.toString())
 
-        if (!hasValidDelegate(acc.address)) {
+        if (!hasValidDelegate(addr)) {
           let timePassed = 0
           while (bal <= BigInt(10000000000000)) {
             setSetup({
@@ -351,7 +349,7 @@ export const WalletContextProvider = ({children}: { children: ReactNode }) => {
   }
 
   async function unloadWallet() {
-    await provider.removeAllListeners("block")
+    await provider?.removeAllListeners("block")
     setAccount(null)
     setNetwork(null)
     setEthrDid(null)
