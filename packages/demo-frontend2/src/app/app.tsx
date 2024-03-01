@@ -40,7 +40,9 @@ function Fallback({ error, resetErrorBoundary }: { error: Error, resetErrorBound
     <div role="alert" className={"flex items-center justify-center w-full p-1 m-0"}>
       <div className={"max-w-[700px] w-full bg-slate-900 rounded p-2"}>
         <p className={"text-white text-sm mb-2 px-1"}>There was an unexpected error. Try reloading or returning to homepage.</p>
-        <pre className={"rounded bg-stone-100 p-2 font-sans w-full break-words whitespace-pre-line text-red-900"}><small>{error.stack}</small></pre>
+        <pre className={"rounded bg-stone-100 p-2 font-sans w-full break-words whitespace-pre-line text-red-900"}>
+          {error.message}
+          <small>{error.stack}</small></pre>
       </div>
     </div>
   );

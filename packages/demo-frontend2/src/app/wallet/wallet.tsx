@@ -143,22 +143,22 @@ const WalletMain = () => {
                             </p>
                         </div>
                     }
-                    {!attributes.ethAvailable &&
-                        <div className={"w-full flex min-h-[150px] items-center justify-center"}>
-                            <p className={"text-red-500"}>Please install an Ethereum wallet. If on mobile, open this
-                                using the wallet's browser.
-                                <br/>
-                                <span className={"text-xs text-gray-500"}>
-                  <b>Note:</b> Metamask is not supported on <u>mobile</u>.
-                  Consider using&nbsp;
-                                    <a href={getCoinbaseLink()} className={"underline text-blue-500"} target={"_blank"}
-                                       rel={"noreferrer"}>
-                    Coinbase Wallet App
-                  </a>.
-                </span>
-                            </p>
-                        </div>
-                    }
+                {/*    {!attributes.ethAvailable &&*/}
+                {/*        <div className={"w-full flex min-h-[150px] items-center justify-center"}>*/}
+                {/*            <p className={"text-red-500"}>Please install an Ethereum wallet. If on mobile, open this*/}
+                {/*                using the wallet's browser.*/}
+                {/*                <br/>*/}
+                {/*                <span className={"text-xs text-gray-500"}>*/}
+                {/*  <b>Note:</b> Metamask is not supported on <u>mobile</u>.*/}
+                {/*  Consider using&nbsp;*/}
+                {/*                    <a href={getCoinbaseLink()} className={"underline text-blue-500"} target={"_blank"}*/}
+                {/*                       rel={"noreferrer"}>*/}
+                {/*    Coinbase Wallet App*/}
+                {/*  </a>.*/}
+                {/*</span>*/}
+                {/*            </p>*/}
+                {/*        </div>*/}
+                {/*    }*/}
 
                     {
                         attributes.setup.state === "FAILED" && (
@@ -197,13 +197,6 @@ type CredentialsListProps = {
 
 const CredentialsList = ({credentials, onUnloadCredential, onVerifyCredential}: CredentialsListProps) => {
     return <div className={"flex flex-col items-start w-full mt-4"}>
-      {credentials.map((cred) => {
-        return <div>
-          <code>
-            {JSON.stringify(cred)}
-          </code>
-        </div>
-      })}
         <h1 className={"underline font-bold"}>{credentials.length > 0 && "Credentials"}</h1>
         <div className={"w-full overflow-y-auto "}>
             <div className={"flex flex-nowrap gap-4 w-fit"}>

@@ -1,14 +1,13 @@
 import {Button} from "@/components/ui/button";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import {useWeb3ModalAccount, useWeb3ModalEvents} from '@web3modal/ethers/react'
 
 const ConnectWalletButton = ({onConnect, connecting}: { onConnect: () => void, connecting: boolean}) => {
     const eth = typeof window !== 'undefined' ? (window as any).ethereum : undefined;
+
     return (<div className={"flex flex-col items-center w-full"}>
-            <Button variant={"ghost"}
-                    className={"bg-orange-500/30 hover:bg-orange-500/90 hover:text-white/95 font-semibold w-1/2"}
-                    onClick={onConnect} disabled={!eth || connecting}>
-                {!connecting ? "Connect Wallet" : <><LoadingSpinner /> Connecting...</>}
-            </Button>
+            <w3m-connect-button />
+
             {!eth && (
                 <div className={"text-center"}>
                     <p className={"text-red-500"}>Uh oh. Seems like you don't have an Ethereum wallet installed.</p>
